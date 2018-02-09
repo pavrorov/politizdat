@@ -1,0 +1,6 @@
+\defaultfontfeatures[OldStandard]
+  {
+    UprightFont    = fonts/old-standard/OldStandard-Regular.otf ,
+    BoldFont       = fonts/old-standard/OldStandard-Bold.otf ,
+    ItalicFont     = fonts/old-standard/OldStandard-Italic.otf
+  }

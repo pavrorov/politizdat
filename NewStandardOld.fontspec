@@ -1,0 +1,7 @@
+\defaultfontfeatures[NewStandardOld]
+  {
+    UprightFont    = fonts/newstand/nstao___.ttf ,
+    BoldFont       = fonts/newstand/nstaob__.ttf ,
+    ItalicFont     = fonts/newstand/nstaoi__.ttf ,
+    BoldItalicFont = fonts/newstand/nstaobo_.ttf
+  }
