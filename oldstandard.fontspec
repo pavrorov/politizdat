@@ -1,0 +1,7 @@
+\defaultfontfeatures[OldStandard]
+  {
+    Path           = ./fonts/old-standard/ ,
+    UprightFont    = OldStandard-Regular.otf ,
+    BoldFont       = OldStandard-Bold.otf ,
+    ItalicFont     = OldStandard-Italic.otf
+  }
