@@ -246,6 +246,13 @@
 }
 
 %%
+%% * **`openany`** Позволяет начинать новую главу как на нечётных (по
+%% умолчанию), так и на *чётных*, т.е. левых страницах издания.
+\DeclareOption {openany} {%
+  \PassOptionsToClass {openany} {memoir}%
+}
+
+%%
 %% * **`oneside`** Режим односторонней печати. Размер левого и правого
 %% полей на всех страницах одинаков.
 \DeclareOption {oneside} {%
@@ -338,11 +345,20 @@
 %%
 %% * **`draft`** Режим черновика. В режиме черновика на полях издания
 %% ставятся пометки об ошибках набора, а также выводятся *рабочие
-%% заметки*.
+%% заметки* (см. `\notice`, см. также `noticeoff`).
 \newif\if@draftmode\@draftmodefalse
 \DeclareOption {draft}
   {%
     \@draftmodetrue%
+  }
+
+%%
+%% * **`noticeoff`** Отдельная опция, позволяющая отключить
+%% печать рабочих заметок в режиме черновика.
+\newif\if@noticeon\@noticeontrue
+\DeclareOption {noticeoff}
+  {%
+    \@noticeonfalse%
   }
 
 %%
@@ -356,8 +372,8 @@
 
 %%
 %% * **`citemore`** Включает расширенный режим цитирования. В этом
-%% режиме указатель на источник включает в себя дополнительные данные,
-%% такие, как год издания.
+%% режиме указатель на источник *при первом цитировании* включает в
+%% себя дополнительные данные, такие, как год издания.
 \newif\if@citemore\@citemorefalse
 \DeclareOption {citemore} {\@citemoretrue}
   
@@ -466,7 +482,7 @@
   \@ifpackageloaded{csquotes}{}{\usepackage{csquotes}}%
   \@ifpackageloaded{polyglossia}{\@switchfontfalse}{}%
   % Тире
-  \ifdefined\cyrdash\let\cyrdash\textendash\fi%
+  \ifdefined\cyrdash\let\cyrdash\textemdash\fi%
 }
 
 \RenewDocumentCommand \bibliography { o m }
@@ -737,7 +753,7 @@
     \fi%
     %
     % Применение разметки
-    \checkandfixthelayout%
+    \checkandfixthelayout[lines]%
   }
 
 %%
@@ -908,80 +924,113 @@
 
 \let\pltzdt@memchapter\chapter
 \newcommand{\dontaddcontentsline}[3]{}
-\NewDocumentCommand \pltzdt@chaptercommon { s o m g }
+\NewDocumentCommand \pltzdt@chaptercommon { s o o m g }
   {%
-    {%
+      \let\wasaddcontentsline\addcontentsline
       \let\addcontentsline\dontaddcontentsline%
-      \IfEmpty{#4}
+      \IfEmpty{#5}
         {%
           \IfEmpty{#2}
             {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*{#3}}
-                {\pltzdt@memchapter{#3}}%
+              \IfEmpty{#3}
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*{#4}}
+                  {\pltzdt@memchapter{#4}}%
+                }
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*[#3]{#4}}
+                  {\pltzdt@memchapter[#4][#3]{#4}}%
+                }%
             }
             {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*[#2]{#3}}
-                {\pltzdt@memchapter[#2]{#3}}%
+              \IfEmpty{#3}
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*[#2]{#4}}
+                  {\pltzdt@memchapter[#2]{#4}}%
+                }
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*[#2][#3]{#4}}
+                  {\pltzdt@memchapter[#2][#3]{#4}}%
+                }%
             }%
         }
         {%
           \global\def\pltzdt@chapaddon{%
             \par\nobreak%
             \vspace{0.25em}%
-            #4%
+            #5%
           }%
           \IfEmpty{#2}
             {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*{#3}}
-                {\pltzdt@memchapter{#3}}%
+              \IfEmpty{#3}
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*{#4}}
+                  {\pltzdt@memchapter{#4}}%
+                }
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*[#3]{#4}}
+                  {\pltzdt@memchapter[#4][#3]{#4}}%
+                }%
             }
             {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*[#2]{#3}}
-                {\pltzdt@memchapter[#2]{#3}}%
+              \IfEmpty{#3}
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*[#2]{#4}}
+                  {\pltzdt@memchapter[#2]{#4}}%
+                }
+                {%
+                  \IfBooleanTF{#1}
+                  {\pltzdt@memchapter*[#2][#3]{#4}}
+                  {\pltzdt@memchapter[#2][#3]{#4}}%
+                }%
             }%
           \global\def\pltzdt@chapaddon{}%
         }%
-    }%
+    \let\addcontentsline\wasaddcontentsline
     \if@headerson%
       \thispagestyle{empty}%
     \fi%
+    \ifdefined\citereset\citereset\fi%
   }
 
-\NewDocumentCommand \mainchapter { s o m g }
+\NewDocumentCommand \mainchapter { s o o m g }
   {%
     \IfBooleanTF{#1}
-      {\pltzdt@chaptercommon*[#2]{#3}{#4}}
-      {\pltzdt@chaptercommon[#2]{#3}{#4}}%
+      {\pltzdt@chaptercommon*[#2][#3]{#4}{#5}}
+      {\pltzdt@chaptercommon[#2][#3]{#4}{#5}}%
     \IfBooleanF{#1}
       {%
         \addtocontents{toc}
           {%
             \protect\normalfont%
-            \protect\vspace{1.0em}%
+            \protect\vspace{1.5em}%
             \protect\centering%
             \protect\textit{\@chapapp\space\thechapter}%
             \protect\par\nobreak%
             \protect\vspace{0.25em}%
             \protect\bfseries%
           }%
-        \IfEmpty{#4}
+        \IfEmpty{#5}
           {%
             \addtocontents{toc}
               {%
-                {\protect\small\protect\MakeTextUppercase{#3}}%
+                {\protect\small\protect\MakeTextUppercase{#4}}%
               }%
           }
           {%
             \addtocontents{toc}
               {%
-                {\protect\small\protect\MakeTextUppercase{#3}}%
+                {\protect\small\protect\MakeTextUppercase{#4}}%
                 \protect\par\nobreak%
                 \protect\vspace{0.25em}%
-                #4%
+                #5%
               }%
           }%
         \addtocontents{toc}
@@ -991,30 +1040,40 @@
       }%
   }%
 
-\NewDocumentCommand \frontchapter { s o m g }
+\NewDocumentCommand \frontchapter { s o o m g }
   {%
     \IfBooleanTF{#1}
-      {\pltzdt@chaptercommon*[#2]{#3}{#4}}
-      {\pltzdt@chaptercommon[#2]{#3}{#4}}%
+      {\pltzdt@chaptercommon*[#2][#3]{#4}{#5}}
+      {\pltzdt@chaptercommon[#2][#3]{#4}{#5}}%
     \IfBooleanF{#1}
       {%
-        \IfEmpty{#4}
+        \IfEmpty{#5}
           {%
-            \addcontentsline{toc}{chapter}{#3}%
+            \addcontentsline{toc}{chapter}{#4}%
           }
           {%
-            \addcontentsline{toc}{chapter}{#3\space#3}%
+            \addcontentsline{toc}{chapter}{#4\space#5}%
           }
       }%
+    \if@headerson%
+      \thispagestyle{plainruled}%
+    \fi%
   }%
 
-\NewDocumentCommand \backchapter { s o m g }
+\NewDocumentCommand \backchapter { s o o m g }
   {%
     \IfBooleanTF{#1}
-      {\frontchapter*[#2]{#3}{#4}}
-      {\frontchapter[#2]{#3}{#4}}%
+      {\frontchapter*[#2][#3]{#4}{#5}}
+      {\frontchapter[#2][#3]{#4}{#5}}%
   }
 
+\renewcommand{\aftertoctitle}{%
+  \if@headerson%
+    \thispagestyle{plainruled}%
+  \fi%
+  \afterchaptertitle%
+}
+  
 \let\pltzdt@memfront\frontmatter
 \newif\if@frontnormal\@frontnormaltrue
 \RenewDocumentCommand \frontmatter { s }
@@ -1029,7 +1088,7 @@
     \chapterstyle{politizdat}%
     \def\chapterheadstart{\vspace*{\beforechapskip}}%
     \renewcommand{\chapter}{\frontchapter}%
-    \ifdefined\shorthandon\shorthandon{"}\fi%
+    %\ifdefined\shorthandon\shorthandon{"}\fi%
   }
 
 \let\pltzdt@memmain\mainmatter
@@ -1046,7 +1105,7 @@
       }%
     \chapterstyle{politizdat}%
     \renewcommand{\chapter}{\mainchapter}%
-    \ifdefined\shorthandon\shorthandon{"}\fi%
+    %\ifdefined\shorthandon\shorthandon{"}\fi%
   }
 \let\pltzdt@memback\backmatter
 \renewcommand{\backmatter}{%
@@ -1054,7 +1113,7 @@
   \chapterstyle{politizdat}%
   \def\chapterheadstart{\vspace*{\beforechapskip}}%
   \renewcommand{\chapter}{\backchapter}%
-  \ifdefined\shorthandon\shorthandon{"}\fi
+  %\ifdefined\shorthandon\shorthandon{"}\fi
 }
 
 \setlength{\parindent}{1.1em}
@@ -1070,6 +1129,12 @@
   \indentafterchapter
   \mainmatter
   \fussy
+
+  \clubpenalty=10000
+  \widowpenalty=10000
+  \interfootnotelinepenalty=10000
+  \brokenpenalty=0
+  \linenottooshort[4em]
 }
 
 \renewcommand{\tocheadstart}{%
@@ -1080,12 +1145,12 @@
 \setsecnumformat{\csname #1secnumformat\endcsname}%
 
 \renewcommand*{\thesection}{\arabic{section}}%
-\setsecheadstyle{\large\bfseries}%
+\setsecheadstyle{\flushleft\large\bfseries}%
 \newcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
 
 \renewcommand*{\thesubsection}{\asbuk{subsection}}%
 \newcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
-\setsubsecheadstyle{\centering\bfseries}%
+\setsubsecheadstyle{\sloppy\centering\bfseries}%
 
 \setsecnumdepth{subsection}%
 
@@ -1094,7 +1159,13 @@
   {%
     \IfBooleanTF{#1}
       {%
-        \pltzdt@memsection*{#4}%
+        \IfEmpty{#3}
+          {%
+            \pltzdt@memsection*{#4}%
+          }
+          {%
+            \pltzdt@memsection*[#3]{#4}%
+          }%
       }
       {%
         \IfEmpty{#2}
@@ -1104,7 +1175,7 @@
                 \pltzdt@memsection{#4}%
               }
               {%
-                \pltzdt@memsection[#3]{#4}%
+                \pltzdt@memsection[#4][#3]{#4}%
               }%
           }
           {%
@@ -1140,7 +1211,13 @@
 \renewcommand{\cftchapterleader}{%
   \cftdotfill{\cftdotsep}%
 }
-\renewcommand{\numberline}[1]{#1\xperiod}
+\setlength{\cftparskip}{0.125em}
+\let\pltzdt@numberline\numberline
+\renewcommand{\numberline}[1]{\pltzdt@numberline{#1\xperiod}}
+\cftsetindents{section}{0em}{1.7em}
+\cftsetindents{subsection}{2.5em}{1.6em}
+\setpnumwidth{2.5em}
+\setrmarg{2.75em}
 
 \NewDocumentCommand \chapterend { g }
   {%
@@ -1216,7 +1293,7 @@
 \fi
 
 \def\labelitemi{--}
-
+\renewcommand{\labelenumi}{\arabic{enumi})}
 
 %%
 %% Текстовые константы
@@ -1233,7 +1310,7 @@
 %%
 \NewDocumentCommand \insertmark { m }
   {%
-    \unskip{} --- \textit{#1.}
+    \unskip{}~--- \textit{#1}\xspace%
   }
 
 \NewDocumentCommand \definemark { m m }
@@ -1252,7 +1329,7 @@
     \global\def\pltzdt@amk{\CYRA\cyrv\cyrt}%
   \fi%
 }
-\definemark {authormark} {\pltzdt@amk}
+\definemark {authormark} {\pltzdt@amk{}.}
 \NewDocumentCommand \amk {} {\authormark}
 
 %%
@@ -1261,7 +1338,7 @@
 %% редакторов материала издания. Также определена краткая форма данной
 %% команды --- `\emk`.
 %%
-\global\def\pltzdt@emk{Auth}%
+\global\def\pltzdt@emk{Ed}%
 \AtBeginDocument{%
   \ifluatex%
     \global\def\pltzdt@emk{Ред}%
@@ -1269,7 +1346,7 @@
     \global\def\pltzdt@emk{\CYRR\cyre\cyrd}%
   \fi%
 }
-\definemark {editormark} {\pltzdt@emk}
+\definemark {editormark} {\pltzdt@emk{}.}
 \NewDocumentCommand \emk {} {\editormark}
 
 %%
@@ -1297,7 +1374,7 @@
 %% команды примечания автора или редактора (о примечаниях см. в
 %% следующем разделе). Например:
 %%
-%%     \definemark{stalin}{И.",Ст.}
+%%     \definemark{stalin}{И.\,Ст.}
 %%     \definenote{author}{inline}{\stalin}
 
 %%
@@ -1625,7 +1702,7 @@
 \NewDocumentCommand \notice { m }
   {%
     \unskip{}%
-    \if@draftmode%
+    \if@draftmode\if@noticeon%      
       \marginpar%
         {%
           \begin{sloppypar}%
@@ -1635,7 +1712,7 @@
         }%
       \stepcounter{pltzdt@notice}%
       \xspace%
-    \fi%
+    \fi\fi%
   }
 
 %%
@@ -1659,25 +1736,76 @@
     {%
       \foreignlanguage{#1}
       {%
-        {%
+%        {%
           \if@switchfont%
             \expandafter\ifcsname#1font\endcsname%
               \csname#1font\endcsname%
-            \else%
-              \ifdefined\mainfont%
-                \mainfont
-              \else%
-                \ifdefined\fontspec%
-                  \fontspec{\rmdefault}%
-                \fi%
-              \fi%
+%            \else%
+%              \ifdefined\mainfont%
+%              \mainfont
+%              \else%
+%                \ifdefined\fontspec%
+%                  \fontspec{\rmdefault}%
+%                \fi%
+%              \fi%
             \fi%
           \fi%
           #2%
-        }%
+%        }%
       }%
     }%
 }
+
+%%
+%% Ссылки на страницы
+%%
+%% В LaTeX доступна команда для набора номера страницы с меткой.
+%% Она подходит для указания на определённое место в тексте. Однако
+%% часто нужно указать не на одно место, а на целый *фрагмент* текста,
+%% который может занимать несколько страниц или просто перейти с одной
+%% страницы на другую. Для обозначения фрагментов и набора ссылок на
+%% них в пакет добавлены специальные команды.
+%%
+%% **`\startlabel`**`{` *метка* `}
+%% **`\endlabel`**
+%%
+%% Первая команда устанавливает метку начала фрагмента, вторая --- его
+%% конец. Внутри команд, метки дополняются суффиксами `:start` и
+%% `:end`, и, при необходимости, могут использоваться независимо друг
+%% от друга.
+%%
+%% ** `\rangeref`**`{` *метка* `}
+%% ** `\rangerefhic`**`{` *метка* `}
+%%
+%% Первая команда набирает `с.~N` или `с.~N--M` автоматически,
+%% в зависимости от того, на одно или на разные страницы указывают
+%% метки начала и конца фрагмента. Вторая команда дополняет вывод
+%% словами «настоящего издания».
+
+\NewDocumentCommand \startlabel { m }
+  {%
+    \unskip{}%
+    \begingroup%
+    \def\pltzdt@labelbase{#1}%
+    \label{#1:start}%
+  }
+\NewDocumentCommand \endlabel {}
+  {%
+    \unskip{}\label{\pltzdt@labelbase:end}%
+    \endgroup%
+  }
+
+\NewDocumentCommand \rangeref { m }
+  {%
+    с.~\ifthenelse {\equal {\pageref{#1:start}} {\pageref{#1:end}}}
+      {\pageref{#1:start}}
+      {\pageref{#1:start}--\pageref{#1:end}}%
+  }
+
+\NewDocumentCommand \rangerefhic { m }
+  {%
+    \rangeref{#1} настоящего издания%
+  }
 
 %%
 %% Ссылки на литературу
@@ -1829,6 +1957,14 @@
     {}%
 }
 
+% Короткое тире для диапазонов
+\DefineBibliographyExtras{russian}{%
+  \protected\def\bibrangedash{%
+    \textendash\penalty\hyphenpenalty}%
+  \protected\def\bibdatedash{%
+    \textendash\penalty\hyphenpenalty}%
+}
+
 % Специальный формат для набора названия непосредственно в основном
 % тексте: название работы заключается в кавычки:
 \DeclareFieldFormat*{citetitle}{\mkbibquote{\inbiblang{#1}}}
@@ -1886,17 +2022,15 @@
               }%
           }%
       ]%
-    }
+    }%
 }
 
 \global\cslet{pltzdt@parentseen}\@empty
-
 \newcommand {\ifparentseen}[2] {%
   \iffieldundef{crossref}
     {#2}
     {\xifinlistcs{\thefield{crossref}}{pltzdt@parentseen}{#1}{#2}}%
 }
-
 \newcommand {\markparentseen} {%
   \iffieldundef{crossref}
     {}
@@ -1907,6 +2041,12 @@
           \listcsxadd{pltzdt@parentseen}{\thefield{crossref}}%
         }%
     }%
+}
+
+\let\pltzdt@blx@citereset\citereset
+\renewcommand{\citereset}{%
+  \pltzdt@blx@citereset%
+  \global\cslet{pltzdt@parentseen}\@empty%
 }
 
 \newcommand {\ifperiodical}[2] {%
@@ -2024,6 +2164,13 @@
   \newunit\usebibmacro{date}%
 }
 
+% В ссылках на литературу указывать только имена авторов,
+% но не редакторов и пр.
+\DeclareLabelname{%
+  \field{shortauthor}
+  \field{author}
+}
+
 % Переопределение макроса для набора ссылки на библиографический
 % источник в краткой форме. В конце ссылки в квадратных скобках
 % выводится номер соответствующего источника в библиографии. При этом,
@@ -2116,10 +2263,9 @@
     \IfEmpty{#4}
       {}
       {%
-        \adddot%
+        \addperiod%
         \addspace%
-        {\citetrackerfalse #4 \citetrackertrue}%
-        \adddot%
+        {\citetrackerfalse{}#4\nopunct{}\citetrackertrue}%
       }%
   }
 
