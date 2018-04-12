@@ -1902,18 +1902,20 @@
 
 % Определение команд цитат
 
-% Настройка отображения имён.
+
+% Настройка отображения имён. [!Не работает в новой версии TexLive,
+% нужно разбираться!]
 
 % Отображение имени автора в библиографии и порядок сортировки имён:
 % фамилия, имя (инициалы):
-\DeclareNameAlias{default}{last-first}
-\DeclareNameAlias{sortname}{last-first}
+% \DeclareNameAlias{default}{last-first}
+% \DeclareNameAlias{sortname}{last-first}
+% \DeclareNameFormat{last-first}{%
+%   \iffirstinits
+%     {\inbiblang{\usebibmacro{name:last-first}{#1}{#4}{#5}{#7}}}
+%     {\inbiblang{\usebibmacro{name:last-first}{#1}{#3}{#5}{#7}}}%
+%   \usebibmacro{name:andothers}}
 
-\DeclareNameFormat{last-first}{%
-  \iffirstinits
-    {\inbiblang{\usebibmacro{name:last-first}{#1}{#4}{#5}{#7}}}
-    {\inbiblang{\usebibmacro{name:last-first}{#1}{#3}{#5}{#7}}}%
-  \usebibmacro{name:andothers}}
 
 % Определение и переопределение форматов вывода различных
 % библиографических полей и составных элементов.
