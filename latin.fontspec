@@ -3,5 +3,6 @@
     Path           = ./fonts/latin/ ,
     UprightFont    = latin___.ttf ,
     BoldFont       = latinb__.ttf ,
-    ItalicFont     = latini__.ttf
+    ItalicFont     = latini__.ttf ,
+	BoldItalicFont = latinbi_.ttf
   }
