@@ -69,6 +69,8 @@
 %% * **`journal`** Журнальное издание. Во всём аналогично книжному,
 %% только по умолчанию выбирается больший формат книжного блока
 %% 60x84/8 и перед названием главы не ставится префикс «Глава N».
+%% Кроме того, вместо заголовка «Оглавление» выводится заголовок
+%% «Содержание».
 \newif\if@journal\@journalfalse
 \DeclareOption {journal}
   {%
@@ -1518,6 +1520,18 @@
 }
 \definecomment{myem}{\pltzdt@myempre}{\pltzdt@myempost}
 \definecomment{ourem}{\pltzdt@ourempre}{\pltzdt@ourempost}
+
+\AfterPackage{babel}{%
+  \AtBeginDocument{%
+    \if@journal%
+      \ifluatex%
+        \global\def\contentsname{Содержание}
+      \else%
+        \global\def\contentsname{\CYRS\cyro\cyrd\cyre\cyrr\cyrzh\cyra\cyrn\cyri\cyre}
+      \fi%
+    \fi%
+  }%
+}
 
 %%
 %% **`\myemx`**`{` *уточнение* `}` и **`\ouremx`**`{` *уточнение* `}`
