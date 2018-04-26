@@ -146,3 +146,17 @@ diff: | clean-diff
 clean-diff:
 	@rm -f A-[0-9][0-9][0-9][0-9].pbm \
 		   B-[0-9][0-9][0-9][0-9].pbm
+
+## ---
+
+W2L_CONF = w2l.conf.xml
+
+%.odt: %.doc
+	lowriter --headless --convert-to odt $<
+
+%.odt: %.docx
+	lowriter --headless --convert-to odt $<
+
+%.tex: %.odt
+	w2l -latex -config=$(W2L_CONF) $< $@
+	sed -i -e '/^\\endinput$$/ d' $@
