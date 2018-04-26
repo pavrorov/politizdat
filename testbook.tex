@@ -1,0 +1,45 @@
+\documentclass[draft,citemore,headerson,openany]{politizdat}
+\usepackage[main=russian]{babel}
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Latin}
+\newfontfamily\russianfont{Latin}%
+\newfontfamily\germanfont{OldStandard}%
+
+\usepackage{amssymb} % для звёздочки в титуле
+\usepackage[bottom]{footmisc}
+\usepackage{hyphenat}
+\usepackage{url}\urlstyle{same}
+
+% В шрифте Latin пока нет многоточия и ударения
+\let\ldotscmd\ldots
+\renewcommand{\ldots}{%
+  {\small\germanfont\ldotscmd}%
+}
+\usepackage{newunicodechar}
+\newunicodechar{́}{{\germanfont ́}}
+\newunicodechar{…}{{\small\germanfont …}}
+
+\bibliography[labelnumber=false]{bib/marx-engels,bib/lenin,bib/stalin,bib/ikki,bib/misc,bib/philosophy,bib/plehanov,bib/s-d,bib/revision,bib/reaction}
+
+
+\begin{document}
+
+\begin{centertitlingpage}
+  \input{testbook.title}
+\end{centertitlingpage}
+
+\setcounter{tocdepth}{3}
+
+\frontmatter*
+\sloppybottom
+\input{testbook.fw}
+
+\mainmatter
+\sloppybottom
+\input{testbook.ch1}
+\input{testbook.ch2}
+
+\backmatter
+\tableofcontents*
+\end{document}

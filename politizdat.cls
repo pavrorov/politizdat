@@ -1296,6 +1296,25 @@
 \renewcommand{\labelenumi}{\arabic{enumi})}
 
 %%
+%% Оформление титульной страницы
+%% -----------------------------
+%%
+%% Для оформления титульной страницы с равными полями слева и
+%% справа можно использовать окружение **`centertitlingpage`**.
+
+\newenvironment{centertitlingpage}{%
+  \begin{titlingpage*}%
+    \newlength{\margindiff}%
+    \addtolength{\margindiff}{\leftmargin}%
+    \addtolength{\margindiff}{-\rightmargin}%
+    \divide\margindiff by 2%
+    \begin{adjustwidth}{\margindiff}{-\margindiff}%
+}{%
+  \end{adjustwidth}%
+  \end{titlingpage*}%
+}
+
+%%
 %% Текстовые константы
 %% -------------------
 %%
