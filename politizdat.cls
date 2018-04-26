@@ -920,11 +920,25 @@
     \def\chapternamenum{}%
     \def\printchapternum{}%
     \def\afterchapternum{}%
+    \def\chaptermark##1{%
+      \markboth{##1}{##1}%
+    }%
   \else%
     \def\printchaptername{\centering\textit{\large\@chapapp}}%
     \def\chapternamenum{\space}%
     \def\printchapternum{\textit{\large\thechapter}}%
     \def\afterchapternum{\par\nobreak\vspace{0.25em}}%
+    \def\chaptermark##1{%
+      \markboth{%
+        \if@mainmatter%
+          \@chapapp\ \thechapter. \ %
+        \fi
+        ##1}{%
+        \if@mainmatter%
+          \@chapapp\ \thechapter. \ %
+        \fi
+        ##1}%
+    }%
   \fi%
   \def\printchapternonum{}%
   \def\printchaptertitle##1{%
