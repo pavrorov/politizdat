@@ -376,7 +376,14 @@
 %% себя дополнительные данные, такие, как год издания.
 \newif\if@citemore\@citemorefalse
 \DeclareOption {citemore} {\@citemoretrue}
-  
+
+%%
+%% * **`sectoc`** Включает режим, в котором номера страниц
+%% в оглавлении указываются только для разделов, а названия
+%% глав набираются по центру.
+\newif\if@sectoc\@sectocfalse
+\DeclareOption {sectoc} {\@sectoctrue}
+
 %%
 %% ### Прочие опции
 %%
@@ -1104,7 +1111,9 @@
         \fi%
       }%
     \chapterstyle{politizdat}%
-    \renewcommand{\chapter}{\mainchapter}%
+    \if@sectoc%
+      \renewcommand{\chapter}{\mainchapter}%
+    \fi%
     %\ifdefined\shorthandon\shorthandon{"}\fi%
   }
 \let\pltzdt@memback\backmatter
