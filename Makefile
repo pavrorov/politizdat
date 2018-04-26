@@ -159,4 +159,4 @@ W2L_CONF = w2l.conf.xml
 
 %.tex: %.odt
 	w2l -latex -config=$(W2L_CONF) $< $@
-	sed -i -e '/^\\endinput$$/ d' $@
+	sed -i -f scripts/w2l.post.sed $@

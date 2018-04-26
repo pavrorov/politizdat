@@ -8,7 +8,7 @@
   <option name="no_index" value="true" />
   <option name="page_formatting" value="ignore_all" />
   <option name="ignore_hard_page_breaks" value="true" />
-  <!--option name="other_styles" value="ignore" /-->
+  <option name="other_styles" value="accept" />
   <option name="use_color" value="false" />
   <option name="multilingual" value="false" />
   <heading-map max-level="4">
@@ -17,4 +17,6 @@
     <heading-level-map writer-level="3" name="subsection" level="2" />
     <heading-level-map writer-level="4" name="subsubsection" level="3" />
   </heading-map>
+  <style-map name="italic" family="text-attribute" before="\emph{" after="}" />
+  <style-map name="Emphasis" family="text" before="\emph{" after="}" />
 </config>
