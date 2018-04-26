@@ -68,13 +68,15 @@
 %%
 %% * **`journal`** Журнальное издание. Во всём аналогично книжному,
 %% только по умолчанию выбирается больший формат книжного блока
-%% 60x84/8 и набор в две колонки.
+%% 60x84/8 и перед названием главы не ставится префикс «Глава N».
+\newif\if@journal\@journalfalse
 \DeclareOption {journal}
   {%
+    \@journaltrue%
     \@inlinenotesfalse%
     \@inlinebibfalse%
     \@perpagetrue%
-    \ExecuteOptions {60x84/8,10pt,twocolumn,headerson}%
+    \ExecuteOptions {60x84/8,10pt,headerson}%
     \setlinespread{0.9}%
   }
 
@@ -911,10 +913,17 @@
   \def\chapterheadstart{%
     \linespread{1.0}%
   }%
-  \def\printchaptername{\centering\textit{\large\@chapapp}}%
-  \def\chapternamenum{\space}%
-  \def\printchapternum{\textit{\large\thechapter}}%
-  \def\afterchapternum{\par\nobreak\vspace{0.25em}}%
+  \if@journal%
+    \def\printchaptername{}%
+    \def\chapternamenum{}%
+    \def\printchapternum{}%
+    \def\afterchapternum{}%
+  \else%
+    \def\printchaptername{\centering\textit{\large\@chapapp}}%
+    \def\chapternamenum{\space}%
+    \def\printchapternum{\textit{\large\thechapter}}%
+    \def\afterchapternum{\par\nobreak\vspace{0.25em}}%
+  \fi%
   \def\printchapternonum{}%
   \def\printchaptertitle##1{%
     \centering\normalfont\Large%
@@ -1014,14 +1023,18 @@
       {\pltzdt@chaptercommon[#2][#3]{#4}{#5}}%
     \IfBooleanF{#1}
       {%
+        \if@sectoc%
         \addtocontents{toc}
           {%
             \protect\normalfont%
             \protect\vspace{1.5em}%
             \protect\centering%
-            \protect\textit{\@chapapp\space\thechapter}%
-            \protect\par\nobreak%
-            \protect\vspace{0.25em}%
+            \if@journal%
+            \else%
+              \protect\textit{\@chapapp\space\thechapter}%
+              \protect\par\nobreak%
+              \protect\vspace{0.25em}%
+            \fi%
             \protect\bfseries%
           }%
         \IfEmpty{#5}
@@ -1044,7 +1057,21 @@
           {%      
             \protect\vspace{0.5em}%
           }
+        \else% sectoc
+        \IfEmpty{#5}
+          {%
+            \addcontentsline{toc}{chapter}{#4}%
+          }
+          {%
+            \addcontentsline{toc}{chapter}{#4\space#5}%
+          }%
+        \fi% sectoc
       }%
+    \if@journal%
+      \if@headerson%
+        \thispagestyle{plainruled}%
+      \fi%
+    \fi%
   }%
 
 \NewDocumentCommand \frontchapter { s o o m g }
@@ -1095,7 +1122,6 @@
     \chapterstyle{politizdat}%
     \def\chapterheadstart{\vspace*{\beforechapskip}}%
     \renewcommand{\chapter}{\frontchapter}%
-    %\ifdefined\shorthandon\shorthandon{"}\fi%
   }
 
 \let\pltzdt@memmain\mainmatter
@@ -1111,18 +1137,20 @@
         \fi%
       }%
     \chapterstyle{politizdat}%
-    \if@sectoc%
+    \if@journal%
+      \def\chapterheadstart{\vspace*{\beforechapskip}}%
+      \renewcommand{\chapter}{\mainchapter}%
+    \else%
       \renewcommand{\chapter}{\mainchapter}%
     \fi%
-    %\ifdefined\shorthandon\shorthandon{"}\fi%
   }
+  
 \let\pltzdt@memback\backmatter
 \renewcommand{\backmatter}{%
   \pltzdt@memback%
   \chapterstyle{politizdat}%
   \def\chapterheadstart{\vspace*{\beforechapskip}}%
   \renewcommand{\chapter}{\backchapter}%
-  %\ifdefined\shorthandon\shorthandon{"}\fi
 }
 
 \setlength{\parindent}{1.1em}
