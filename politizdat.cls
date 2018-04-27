@@ -272,8 +272,7 @@
 }
 
 %%
-%% * **`twocolumn`** Двухколонный набор. Используется по умолчанию для
-%% журнальных изданий (опция `journal`).
+%% * **`twocolumn`** Двухколонный набор.
 \DeclareOption {twocolumn} {%
   % TODO: set column spread
   \PassOptionsToClass {twocolumn} {memoir}%
