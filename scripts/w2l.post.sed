@@ -16,6 +16,9 @@ s/[[:space:]]*\(\\\(textbf\|textit\|emph\){\)[[:space:]]*\[[[:space:]]*\([^]]*\)
 s/[[:space:]]*\(\\\(textbf\|textit\|emph\){\)[[:space:]]*\[[[:space:]]*\([^]]*\)[[:space:]]*\]}/\\footnote{\3}/g;
 s/[[:space:]]*\[[[:space:]]*\([^]]*\)[[:space:]]*\]/\\footnote{\1}/g;
 
+# Исправляем ошибочные срабатывания
+s/\\\([[:upper:][:lower:]]\+\)\\footnote{\([^}]\+\)}/\\\1[\2]/g;
+
 # Убираем переносы
 s/\\-//g;
 
