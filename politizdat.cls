@@ -909,29 +909,89 @@
 \makeoddhead{plainruled}{}{}{\footnotesize\textit{\thepage}}
 \makeheadrule{plainruled}{\textwidth}{\normalrulethickness}
 
+%%
 %% **`\chapterauthor`**`{` *Имя автора главы* `}` Определяет
-%% имя автора, которое выводится перед названием главы и в
-%% оглавлении.
+%% имя автора, которое выводится перед названием следующей главы
+%% и в оглавлении.
+%%
+%% **`\nochapterauthor`**` Отменяет действие команды `\chapterauthor`.
 
 \def\thechapterauthor{}
+\newif\if@chapterauthorset\@chapterauthorsetfalse
 \newcommand{\chapterauthor}[1]{%
   \global\def\thechapterauthor{#1}%
+  \@chapterauthorsettrue
+}
+\newcommand{\nochapterauthor}{%
+  \@chapterauthorsetfalse
+  \global\def\thechapterauthor{}%
 }
 \newcommand{\printchapterauthor}{%
-  \ifthenelse {\equal {\thechapterauthor} {}}
-    {}
-    {%
-      \begin{flushleft}%
-        {\Large\textit{\thechapterauthor}\vspace*{-\baselineskip}}
-      \end{flushleft}%
-    }%
+  \if@chapterauthorset%
+    \begin{flushleft}%
+      {\Large\textit{\thechapterauthor}\vspace*{-\baselineskip}}
+    \end{flushleft}%
+  \fi%
+}
+
+%% **`\setprechapter`**`{` *содержимое* `}` Определяет материал,
+%% который будет выведен перед названием следующей главы.
+%%
+%% **`\setprechapter*`**`{` *содержимое* `}` Аналогична варианту
+%% без звёздочки, однако специально отключает колонтитулы.
+%%
+%% **`\clearprechapter`** Отменяет действие команды `\setprechapter`.
+
+\def\@prechapter{}
+\newif\if@prechapterset\@prechaptersetfalse
+\def\normalmainchapterpagestyle{%
+  \if@headerson%
+    \thispagestyle{empty}%
+  \else%
+    \thispagestyle{chapter}%
+  \fi%
+}
+\def\normalotherchapterpagestyle{%
+  \if@headerson%
+    \thispagestyle{plainruled}%
+  \else%
+    \thispagestyle{chapter}%
+  \fi%
+}
+\def\otherchapterpagestyle{\normalotherchapterpagestyle}
+\def\mainchapterpagestyle{\normalmainchapterpagestyle}
+\NewDocumentCommand \setprechapter { s m }
+  {%
+    \global\def\@prechapter{#2}%
+    \@prechaptersettrue%
+    \IfBooleanTF{#1}
+      {%
+        \global\def\otherchapterpagestyle{\thispagestyle{empty}}%
+        \global\def\mainchapterpagestyle{\thispagestyle{empty}}%
+      }
+      {%
+        \global\def\otherchapterpagestyle{\normalotherchapterpagestyle}%
+        \global\def\mainchapterpagestyle{\normalmainchapterpagestyle}%
+      }
+  }
+\newcommand{\clearprechapter}{%
+  \@prechaptersetfalse%
+  \global\def\otherchapterpagestyle{\normalotherchapterpagestyle}%
+  \global\def\mainchapterpagestyle{\normalmainchapterpagestyle}%
+  \global\def\@prechapter{}%
+}
+\newcommand{\printprechapter}{%
+  \if@prechapterset%
+    \@prechapter\par%
+  \fi%
+  \printchapterauthor%
 }
 
 \global\def\pltzdt@chapaddon{}%
 \makechapterstyle{politizdat}{%
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
-    \printchapterauthor%
+    \printprechapter%
     \linespread{1.0}%
   }%
   \if@journal%
@@ -970,6 +1030,7 @@
     \par\nobreak\vskip%
     \afterchapskip%
     \linespread{\pltzdt@linespread}%
+    \clearprechapter%
   }%
 }
 
@@ -1045,9 +1106,7 @@
           \global\def\pltzdt@chapaddon{}%
         }%
     \let\addcontentsline\wasaddcontentsline
-    \if@headerson%
-      \thispagestyle{empty}%
-    \fi%
+    \mainchapterpagestyle%
     \ifdefined\citereset\citereset\fi%
   }
 
@@ -1064,19 +1123,33 @@
             \protect\normalfont%
             \protect\vspace{1.5em}%
             \protect\centering%
-            \if@journal%
-              \ifthenelse {\equal {\thechapterauthor} {}}
-                {}
-                {%
-                  \protect\textit{\thechapterauthor}%
-                  \protect\par\nobreak%
-                  \protect\vspace{0.25em}%
-                }%
-            \else%
+          }%
+        \if@journal%
+          \if@chapterauthorset%
+            \addtocontents{toc}
+              {%
+                \protect\textit{\thechapterauthor}%
+                \protect\par\nobreak%
+                \protect\vspace{0.25em}%
+              }%
+          \fi%
+        \else%
+          \addtocontents{toc}
+            {%
               \protect\textit{\@chapapp\space\thechapter}%
               \protect\par\nobreak%
               \protect\vspace{0.25em}%
-            \fi%
+            }%
+          \if@chapterauthorset%
+            \addtocontents{toc}
+              {%
+                \protect\textit{(\thechapterauthor)}%
+                \protect\vspace{0.25em}%
+              }%
+          \fi%
+        \fi%
+        \addtocontents{toc}
+          {%  
             \protect\bfseries%
           }%
         \IfEmpty{#5}
@@ -1102,30 +1175,28 @@
         \else% sectoc
         \IfEmpty{#5}
           {%
-            \ifthenelse {\equal {\thechapterauthor} {}}
-              {%
-                \addcontentsline{toc}{chapter}{#4}%
-              }
-              {%
-                \addcontentsline{toc}{chapter}{%
+            \if@chapterauthorset%
+              \addcontentsline{toc}{chapter}
+                {%
                   {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}#4%
                 }%
-              }
+            \else%
+              \addcontentsline{toc}{chapter}{#4}%
+            \fi%
           }
           {%
-            \ifthenelse {\equal {\thechapterauthor} {}}
-              {%
-                \addcontentsline{toc}{chapter}{#4\space{}#5}%
-              }
-              {%
-                \addcontentsline{toc}{chapter}{%
+            \if@chapterauthorset%
+              \addcontentsline{toc}{chapter}
+                {%
                   {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}#4\space{}#5%
                 }%
-              }
+            \else%
+              \addcontentsline{toc}{chapter}{#4\space{}#5}%
+            \fi%
           }%
         \fi% sectoc
       }%
-      \chapterauthor{}%
+      \nochapterauthor%
   }%
 
 \NewDocumentCommand \frontchapter { s o o m g }
@@ -1143,10 +1214,8 @@
             \addcontentsline{toc}{chapter}{#4\space#5}%
           }
       }%
-    \if@headerson%
-      \thispagestyle{plainruled}%
-    \fi%
-    \chapterauthor{}%  
+    \otherchapterpagestyle%
+    \nochapterauthor%
   }%
 
 \NewDocumentCommand \backchapter { s o o m g }
@@ -1157,9 +1226,7 @@
   }
 
 \renewcommand{\aftertoctitle}{%
-  \if@headerson%
-    \thispagestyle{plainruled}%
-  \fi%
+  \otherchapterpagestyle%
   \afterchaptertitle%
 }
   
@@ -1175,7 +1242,7 @@
         \@frontnormalfalse%
       }% 
     \chapterstyle{politizdat}%
-    \def\chapterheadstart{\printchapterauthor\vspace*{\beforechapskip}}%
+    \def\chapterheadstart{\printprechapter\vspace*{\beforechapskip}}%
     \renewcommand{\chapter}{\frontchapter}%
   }
 
@@ -1193,7 +1260,7 @@
       }%
     \chapterstyle{politizdat}%
     \if@journal%
-      \def\chapterheadstart{\printchapterauthor\vspace*{\beforechapskip}}%
+      \def\chapterheadstart{\printprechapter\vspace*{\beforechapskip}}%
       \renewcommand{\chapter}{\mainchapter}%
     \else%
       \renewcommand{\chapter}{\mainchapter}%
@@ -1204,7 +1271,7 @@
 \renewcommand{\backmatter}{%
   \pltzdt@memback%
   \chapterstyle{politizdat}%
-  \def\chapterheadstart{\printchapterauthor\vspace*{\beforechapskip}}%
+  \def\chapterheadstart{\printprechapter\vspace*{\beforechapskip}}%
   \renewcommand{\chapter}{\backchapter}%
 }
 
@@ -1231,7 +1298,6 @@
 
 \renewcommand{\tocheadstart}{%
   \cleardoublepage%
-  \chapterauthor{}%
   \chapterheadstart%
 }
 
