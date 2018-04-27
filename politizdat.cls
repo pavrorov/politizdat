@@ -1297,7 +1297,7 @@
   \renewcommand{\chapter}{\backchapter}%
 }
 
-\setlength{\parindent}{1.1em}
+\setlength{\parindent}{1.4em}
 \linespread{\pltzdt@linespread}%
 \setlength{\lineskiplimit}{-\maxdimen}
 \RenewDocumentCommand \@makefnmark {}
