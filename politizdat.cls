@@ -927,9 +927,11 @@
 }
 \newcommand{\printchapterauthor}{%
   \if@chapterauthorset%
-    \begin{flushleft}%
-      {\Large\textit{\thechapterauthor}\vspace*{-\baselineskip}}
-    \end{flushleft}%
+    {%
+      \flushleft%
+      \Large\textit{\thechapterauthor}\vspace*{-\baselineskip}%
+      \par%
+    }%
   \fi%
 }
 
