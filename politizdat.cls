@@ -1306,6 +1306,20 @@
 \setsecheadstyle{\flushleft\large\bfseries}%
 \newcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
 
+%%
+%% **`\nextsection`**  Начинает новый раздел (section) без названия,
+%% порядковый номер которого набирается заглавной римской цифрой.
+\newcommand{\nextsection}{%
+  {%
+    \renewcommand*{\thesection}{\Roman{section}}%
+    \setsecheadstyle{\centering\large\bfseries}%
+    \renewcommand{\sectionsecnumformat}{\thesection}%
+    \def\tmp@rightmark{\rightmark}%
+    \section{}%
+    \markright{\tmp@rightmark}%
+  }%
+}
+
 \renewcommand*{\thesubsection}{\asbuk{subsection}}%
 \newcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
 \setsubsecheadstyle{\sloppy\centering\bfseries}%
