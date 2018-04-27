@@ -1372,7 +1372,11 @@
 \setlength{\cftparskip}{0.125em}
 \let\pltzdt@numberline\numberline
 \renewcommand{\numberline}[1]{\pltzdt@numberline{#1\xperiod}}
-\cftsetindents{section}{0em}{1.5em}
+
+\if@sectoc%
+  \cftsetindents{section}{0em}{1.5em}
+\fi%
+  
 \cftsetindents{subsection}{2.5em}{1.5em}
 \setpnumwidth{2.5em}
 \setrmarg{2.75em}
