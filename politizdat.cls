@@ -1300,31 +1300,43 @@
   \chapterheadstart%
 }
 
+\newcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
+\newcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
 \setsecnumformat{\csname #1secnumformat\endcsname}%
 
-\renewcommand*{\thesection}{\arabic{section}}%
-\setsecheadstyle{\flushleft\large\bfseries}%
-\newcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
+\makeheadstyles{politizdat}{%
+  \headstyles{default}%
+  \renewcommand*{\thesection}{\arabic{section}}%
+  \setsecheadstyle{\flushleft\large\bfseries}%
+  \renewcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
+  \renewcommand*{\thesubsection}{\asbuk{subsection}}%
+  \renewcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
+  \setsubsecheadstyle{\sloppy\centering\bfseries}%
+  \setsecnumdepth{subsection}%
+}
+
+\makeheadstyles{politizdat@anonsec}{%
+  \headstyles{default}%
+  \renewcommand*{\thesection}{\Roman{section}}%
+  \setsecheadstyle{\centering\large\bfseries}%
+  \renewcommand{\sectionsecnumformat}{\thesection}%
+  \renewcommand*{\thesubsection}{}%
+  \setsubsecheadstyle{\sloppy\centering\bfseries}%
+  \setsecnumdepth{subsection}%
+}
+
+\headstyles{politizdat}
 
 %%
 %% **`\nextsection`**  Начинает новый раздел (section) без названия,
 %% порядковый номер которого набирается заглавной римской цифрой.
 \newcommand{\nextsection}{%
-  {%
-    \renewcommand*{\thesection}{\Roman{section}}%
-    \setsecheadstyle{\centering\large\bfseries}%
-    \renewcommand{\sectionsecnumformat}{\thesection}%
-    \def\tmp@rightmark{\rightmark}%
-    \section{}%
-    \markright{\tmp@rightmark}%
-  }%
+  \def\tmp@rightmark{\rightmark}%
+  \headstyles{politizdat@anonsec}%
+  \section{}%
+  \markright{\tmp@rightmark}%
+  \headstyles{politizdat}%
 }
-
-\renewcommand*{\thesubsection}{\asbuk{subsection}}%
-\newcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
-\setsubsecheadstyle{\sloppy\centering\bfseries}%
-
-\setsecnumdepth{subsection}%
 
 \let\pltzdt@memsection\section
 \RenewDocumentCommand \section { s o o m }
@@ -1379,7 +1391,7 @@
     \@afterindenttrue%
     \@afterheading%
   }
-
+  
 \renewcommand{\cftchapterleader}{%
   \cftdotfill{\cftdotsep}%
 }
