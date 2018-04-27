@@ -1,0 +1,8 @@
+\defaultfontfeatures[Academy]
+  {
+    Path           = ./fonts/academy/ ,
+    UprightFont    = acado___.ttf ,
+    BoldFont       = acadob__.ttf ,
+    ItalicFont     = acadoi__.ttf ,
+	BoldItalicFont = acadobo_.ttf
+  }
