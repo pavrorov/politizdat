@@ -388,6 +388,12 @@
 \DeclareOption {sectoc} {\@sectoctrue}
 
 %%
+%% * **`noupcasechaps`** Выключает режим набора названий глав в
+%% заглавными буквами. См. описание команды `\printchaptertitletext`.
+\newif\if@noupcasechaps\@noupcasechapsfalse
+\DeclareOption {noupcasechaps} {\@noupcasechapstrue}
+
+%%
 %% ### Прочие опции
 %%
 %% В режиме по умолчанию, попытка указать не определённую явно в
@@ -988,6 +994,20 @@
   \printchapterauthor%
 }
 
+%%
+%% **`\printchaptertitletext`**  Команда вывода названия главы.
+%% Может быть переопределена для изменения стиля. По умолчанию,
+%% в зависимости от опции `noupcasechaps` набирает названия глав
+%% заглавными буквами или увеличенным шрифтом, но без изменения
+%% регистра.
+\newcommand{\printchaptertitletext}[1]{%
+  \if@noupcasechaps%
+    \LARGE #1
+  \else%
+    \protect\MakeTextUppercase{#1}%
+  \fi%
+}
+
 \global\def\pltzdt@chapaddon{}%
 \makechapterstyle{politizdat}{%
   \headstyles{politizdat}%
@@ -1025,7 +1045,7 @@
   \def\printchaptertitle##1{%
     \centering\normalfont\Large%
     \protect\bfseries%
-    \protect\MakeTextUppercase{##1}%
+    \printchaptertitletext{##1}%
     \pltzdt@chapaddon%
   }%
   \def\afterchaptertitle{%
