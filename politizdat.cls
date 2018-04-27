@@ -988,6 +988,7 @@
 
 \global\def\pltzdt@chapaddon{}%
 \makechapterstyle{politizdat}{%
+  \headstyles{politizdat}%
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
     \printprechapter%
@@ -1321,6 +1322,7 @@
   \setsecheadstyle{\centering\large\bfseries}%
   \renewcommand{\sectionsecnumformat}{\thesection}%
   \renewcommand*{\thesubsection}{}%
+  \renewcommand{\subsectionsecnumformat}{}%
   \setsubsecheadstyle{\sloppy\centering\bfseries}%
   \setsecnumdepth{subsection}%
 }
@@ -1335,7 +1337,6 @@
   \headstyles{politizdat@anonsec}%
   \section{}%
   \markright{\tmp@rightmark}%
-  \headstyles{politizdat}%
 }
 
 \let\pltzdt@memsection\section
