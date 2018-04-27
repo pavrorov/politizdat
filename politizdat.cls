@@ -1759,6 +1759,16 @@
   \medskip
 }
 
+%%
+%% **`intro`** Аналогично окружению `quotation`, но полоса зауживается
+%% с обоих сторон.
+\newenvironment{intro}{%
+  \begin{adjustwidth}{2.5em}{2.5em}%
+    \hskip\parindent%
+}{%
+  \end{adjustwidth}%
+  \medskip%
+}
 
 %%
 %% Сноски и примечания
