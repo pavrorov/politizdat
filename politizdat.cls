@@ -1001,6 +1001,13 @@
   \def\chapterheadstart{%
     \printprechapter%
     \linespread{1.0}%
+    \if@mainmatter%
+      \if@journal%
+        \vspace*{\beforechapskip}%
+      \fi%
+    \else%
+      \vspace*{\beforechapskip}%
+    \fi%
   }%
   \if@journal%
     \def\printchaptername{}%
@@ -1261,8 +1268,6 @@
         \pagenumbering{Roman}%
         \@frontnormalfalse%
       }% 
-    \chapterstyle{politizdat}%
-    \def\chapterheadstart{\printprechapter\vspace*{\beforechapskip}}%
     \renewcommand{\chapter}{\frontchapter}%
   }
 
@@ -1278,20 +1283,12 @@
           \pltzdt@memmain%
         \fi%
       }%
-    \chapterstyle{politizdat}%
-    \if@journal%
-      \def\chapterheadstart{\printprechapter\vspace*{\beforechapskip}}%
-      \renewcommand{\chapter}{\mainchapter}%
-    \else%
-      \renewcommand{\chapter}{\mainchapter}%
-    \fi%
+    \renewcommand{\chapter}{\mainchapter}%
   }
   
 \let\pltzdt@memback\backmatter
 \renewcommand{\backmatter}{%
   \pltzdt@memback%
-  \chapterstyle{politizdat}%
-  \def\chapterheadstart{\printprechapter\vspace*{\beforechapskip}}%
   \renewcommand{\chapter}{\backchapter}%
 }
 
@@ -1346,8 +1343,6 @@
   \setsubsecheadstyle{\sloppy\centering\bfseries}%
   \setsecnumdepth{subsection}%
 }
-
-\headstyles{politizdat}
 
 %%
 %% **`\nextsection`**  Начинает новый раздел (section) без названия,
@@ -2593,6 +2588,8 @@
 \renewcommand*{\subtitlepunct}{\addperiod\addspace}
   
 } %\AfterPackage{biblatex}
+
+\chapterstyle{politizdat}
 
 % Конец.
 \endinput
