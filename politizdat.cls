@@ -1036,7 +1036,7 @@
 }
 
 \makechapterstyle{politizdat}{%
-  %\chapterstyle{default}%
+  \chapterstyle{default}%
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
     \printprechapter%
