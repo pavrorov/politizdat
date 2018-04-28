@@ -994,7 +994,6 @@
   \printchapterauthor%
 }
 
-\global\def\pltzdt@chapaddon{}%
 \makechapterstyle{politizdat}{%
   \headstyles{politizdat}%
   \def\thechapter{\Roman{chapter}}%
@@ -1043,7 +1042,6 @@
     \else%
       \protect\MakeTextUppercase{##1}%
     \fi%
-    \pltzdt@chapaddon%
   }%
   \def\printtoctitle##1{%
     \centering\normalfont\Large%
@@ -1063,85 +1061,47 @@
 
 \let\pltzdt@memchapter\chapter
 \newcommand{\dontaddcontentsline}[3]{}
-\NewDocumentCommand \pltzdt@chaptercommon { s o o m g }
+\NewDocumentCommand \pltzdt@chaptercommon { s o o m }
   {%
       \let\wasaddcontentsline\addcontentsline
       \let\addcontentsline\dontaddcontentsline%
-      \IfEmpty{#5}
+      \IfEmpty{#2}
         {%
-          \IfEmpty{#2}
+          \IfEmpty{#3}
             {%
-              \IfEmpty{#3}
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*{#4}}
-                  {\pltzdt@memchapter{#4}}%
-                }
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*[#3]{#4}}
-                  {\pltzdt@memchapter[#4][#3]{#4}}%
-                }%
+              \IfBooleanTF{#1}
+                {\pltzdt@memchapter*{#4}}
+                {\pltzdt@memchapter{#4}}%
             }
             {%
-              \IfEmpty{#3}
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*[#2]{#4}}
-                  {\pltzdt@memchapter[#2]{#4}}%
-                }
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*[#2][#3]{#4}}
-                  {\pltzdt@memchapter[#2][#3]{#4}}%
-                }%
+              \IfBooleanTF{#1}
+                {\pltzdt@memchapter*[#3]{#4}}
+                {\pltzdt@memchapter[#4][#3]{#4}}%
             }%
         }
         {%
-          \global\def\pltzdt@chapaddon{%
-            \par\nobreak%
-            \vspace{0.25em}%
-            #5%
-          }%
-          \IfEmpty{#2}
+          \IfEmpty{#3}
             {%
-              \IfEmpty{#3}
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*{#4}}
-                  {\pltzdt@memchapter{#4}}%
-                }
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*[#3]{#4}}
-                  {\pltzdt@memchapter[#4][#3]{#4}}%
-                }%
+              \IfBooleanTF{#1}
+                {\pltzdt@memchapter*[#2]{#4}}
+                {\pltzdt@memchapter[#2]{#4}}%
             }
             {%
-              \IfEmpty{#3}
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*[#2]{#4}}
-                  {\pltzdt@memchapter[#2]{#4}}%
-                }
-                {%
-                  \IfBooleanTF{#1}
-                  {\pltzdt@memchapter*[#2][#3]{#4}}
-                  {\pltzdt@memchapter[#2][#3]{#4}}%
-                }%
+              \IfBooleanTF{#1}
+                {\pltzdt@memchapter*[#2][#3]{#4}}
+                {\pltzdt@memchapter[#2][#3]{#4}}%
             }%
-          \global\def\pltzdt@chapaddon{}%
         }%
-    \let\addcontentsline\wasaddcontentsline
-    \mainchapterpagestyle%
-    \ifdefined\citereset\citereset\fi%
+      \let\addcontentsline\wasaddcontentsline
+      \mainchapterpagestyle%
+      \ifdefined\citereset\citereset\fi%
   }
 
-\NewDocumentCommand \mainchapter { s o o m g }
+\NewDocumentCommand \mainchapter { s o o m }
   {%
     \IfBooleanTF{#1}
-      {\pltzdt@chaptercommon*[#2][#3]{#4}{#5}}
-      {\pltzdt@chaptercommon[#2][#3]{#4}{#5}}%
+      {\pltzdt@chaptercommon*[#2][#3]{#4}}
+      {\pltzdt@chaptercommon[#2][#3]{#4}}%
     \IfBooleanF{#1}
       {%
         \if@sectoc%
@@ -1178,78 +1138,41 @@
         \addtocontents{toc}
           {%  
             \protect\bfseries%
-          }%
-        \IfEmpty{#5}
-          {%
-            \addtocontents{toc}
-              {%
-                {\protect\small\protect\MakeTextUppercase{#4}}%
-              }%
-          }
-          {%
-            \addtocontents{toc}
-              {%
-                {\protect\small\protect\MakeTextUppercase{#4}}%
-                \protect\par\nobreak%
-                \protect\vspace{0.25em}%
-                #5%
-              }%
-          }%
-        \addtocontents{toc}
-          {%      
+            {\protect\small\protect\MakeTextUppercase{#4}}%
             \protect\vspace{0.5em}%
           }
         \else% sectoc
-        \IfEmpty{#5}
-          {%
-            \if@chapterauthorset%
-              \addcontentsline{toc}{chapter}
-                {%
-                  {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}#4%
-                }%
-            \else%
-              \addcontentsline{toc}{chapter}{#4}%
-            \fi%
-          }
-          {%
-            \if@chapterauthorset%
-              \addcontentsline{toc}{chapter}
-                {%
-                  {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}#4\space{}#5%
-                }%
-            \else%
-              \addcontentsline{toc}{chapter}{#4\space{}#5}%
-            \fi%
-          }%
+        \if@chapterauthorset%
+          \addcontentsline{toc}{chapter}
+            {%
+              {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}#4%
+            }%
+        \else%
+          \addcontentsline{toc}{chapter}{#4}%
+        \fi%  
         \fi% sectoc
       }%
       \nochapterauthor%
   }%
 
-\NewDocumentCommand \frontchapter { s o o m g }
+\NewDocumentCommand \frontchapter { s o o m }
   {%
     \IfBooleanTF{#1}
-      {\pltzdt@chaptercommon*[#2][#3]{#4}{#5}}
-      {\pltzdt@chaptercommon[#2][#3]{#4}{#5}}%
+      {\pltzdt@chaptercommon*[#2][#3]{#4}}
+      {\pltzdt@chaptercommon[#2][#3]{#4}}%
     \IfBooleanF{#1}
       {%
-        \IfEmpty{#5}
-          {%
-            \addcontentsline{toc}{chapter}{#4}%
-          }
-          {%
-            \addcontentsline{toc}{chapter}{#4\space#5}%
-          }
+        \addcontentsline{toc}{chapter}{#4}%
       }%
     \otherchapterpagestyle%
     \nochapterauthor%
   }%
 
-\NewDocumentCommand \backchapter { s o o m g }
+\NewDocumentCommand \backchapter { s o o m }
   {%
     \IfBooleanTF{#1}
-      {\frontchapter*[#2][#3]{#4}{#5}}
-      {\frontchapter[#2][#3]{#4}{#5}}%
+      {\frontchapter*[#2][#3]{#4}}
+      {\frontchapter[#2][#3]{#4}}%
   }
 
 \renewcommand{\aftertoctitle}{%
