@@ -389,7 +389,7 @@
 
 %%
 %% * **`noupcasechaps`** Выключает режим набора названий глав в
-%% заглавными буквами. См. описание команды `\printchaptertitletext`.
+%% заглавными буквами.
 \newif\if@noupcasechaps\@noupcasechapsfalse
 \DeclareOption {noupcasechaps} {\@noupcasechapstrue}
 
@@ -994,20 +994,6 @@
   \printchapterauthor%
 }
 
-%%
-%% **`\printchaptertitletext`**  Команда вывода названия главы.
-%% Может быть переопределена для изменения стиля. По умолчанию,
-%% в зависимости от опции `noupcasechaps` набирает названия глав
-%% заглавными буквами или увеличенным шрифтом, но без изменения
-%% регистра.
-\newcommand{\printchaptertitletext}[1]{%
-  \if@noupcasechaps%
-    \LARGE #1
-  \else%
-    \protect\MakeTextUppercase{#1}%
-  \fi%
-}
-
 \global\def\pltzdt@chapaddon{}%
 \makechapterstyle{politizdat}{%
   \headstyles{politizdat}%
@@ -1045,9 +1031,21 @@
   \def\printchaptertitle##1{%
     \centering\normalfont\Large%
     \protect\bfseries%
-    \printchaptertitletext{##1}%
+    \if@noupcasechaps%
+      \LARGE ##1
+    \else%
+      \protect\MakeTextUppercase{##1}%
+    \fi%
     \pltzdt@chapaddon%
   }%
+  \def\printtoctitle##1{%
+    \centering\normalfont\Large%
+    \protect\bfseries%
+    \if@noupcasechaps%
+      \LARGE%
+    \fi%
+    \protect\MakeTextUppercase{##1}%
+  }
   \def\afterchaptertitle{%
     \par\nobreak\vskip%
     \afterchapskip%
