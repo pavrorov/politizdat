@@ -1295,8 +1295,11 @@
 \cftsetindents{subsection}{2.5em}{1.5em}%
 
 %%
-%% **`\nextsection`**  Начинает новый раздел (section) без названия,
+%% **`\nextsection`**  Начинает новый раздел (section) *без названия*,
 %% порядковый номер которого набирается заглавной римской цифрой.
+%% Привычная нумерация разделов будет восстанавливается с началом
+%% новой главы. Вызывается также, когда передан пустой аргумент
+%% команде `\section`.
 \newcounter{nextsectionnum}[chapter]%
 \setcounter{nextsectionnum}{0}%
 \newcommand{\nosectionmark}[1]{}%
@@ -1310,6 +1313,7 @@
 \let\pltzdt@memsection\section
 \RenewDocumentCommand \section { s o o m }
   {%
+    \IfEmpty{#4}{\nextsection}{%
     \IfBooleanTF{#1}
       {%
         \IfEmpty{#3}
@@ -1340,9 +1344,10 @@
                 \pltzdt@memsection[#2][#3]{#4}%
               }
           }%
-      }%
+      }%  
     \@afterindenttrue%
     \@afterheading%
+    }%
   }
 
 \let\pltzdt@memsubsection\subsection
