@@ -1131,6 +1131,9 @@
       {\pltzdt@chaptercommon[#2][#3]{#4}}%
     \IfBooleanF{#1}
       {%
+        \IfEmpty{#3}
+          {\def\@chaptitle{#4}}
+          {\def\@chaptitle{#3}}%
         \if@sectoc%
         \addtocontents{toc}
           {%
@@ -1162,20 +1165,24 @@
               }%
           \fi%
         \fi%
-        \addtocontents{toc}
-          {%  
-            \protect\bfseries%
-            {\protect\small\protect\MakeTextUppercase{#4}}%
-            \protect\vspace{0.5em}%
-          }
+        \addtocontents{toc}{\protect\bfseries}%
+        \if@noupcasechaps%
+          \addtocontents{toc}{\@chaptitle}%
+        \else%
+          \addtocontents{toc}
+            {%
+              {\protect\small\protect\MakeTextUppercase{\@chaptitle}}%
+            }%
+        \fi%
+        \addtocontents{toc}{\protect\vspace{0.5em}}%
         \else% sectoc
         \if@chapterauthorset%
           \addcontentsline{toc}{chapter}
             {%
-              {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}#4%
+              {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}\@chaptitle%
             }%
         \else%
-          \addcontentsline{toc}{chapter}{#4}%
+          \addcontentsline{toc}{chapter}{\@chaptitle}%
         \fi%  
         \fi% sectoc
       }%
