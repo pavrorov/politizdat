@@ -879,40 +879,104 @@
   \fi%
 }
 
-\raggedbottom
+\sloppybottom
 \applylayout
 
 % Настройка стиля оформления страниц
 
-\AtBeginDocument{%
-  \pagenumbering{arabic}
-  \nouppercaseheads
-}
-
-\makeevenfoot{plain}{\small\thepage}{}{}
-\makeoddfoot{plain}{}{}{\small\thepage}
-
 \makeevenhead{headings}{\footnotesize\textit{\thepage}}
-                       {\footnotesize\textit{\leftmark}}{}
+                       {\footnotesize\textit{\memUChead{\leftmark}}}{}
 
-\makeoddhead{headings}{}{\footnotesize\textit{\rightmark}}
+\makeoddhead{headings}{}{\footnotesize\textit{\memUChead{\rightmark}}}
                         {\footnotesize\textit{\thepage}}
 \makeevenfoot{headings}{}{}{}
 \makeoddfoot{headings}{}{}{}
 \makeheadrule{headings}{\textwidth}{\normalrulethickness}
 
-\makeevenhead{myheadings}{\footnotesize\textit{\thepage}}
-                         {\footnotesize\textit{\leftmark}}{}
-\makeoddhead{myheadings}{}{\footnotesize\textit{\rightmark}}
-                          {\footnotesize\textit{\thepage}}
-\makeevenfoot{myheadings}{}{}{}
-\makeoddfoot{myheadings}{}{}{}
-\makeheadrule{myheadings}{\textwidth}{\normalrulethickness}
+\makepsmarks{headings}{%
+  \if@journal%
+    \def\chaptermark##1{%
+      \markboth{##1}{##1}%
+    }%
+  \else%
+    \def\chaptermark##1{%
+      \markboth{%
+        \if@mainmatter%
+          \@chapapp\ \thechapter. \ %
+        \fi
+        ##1}{%
+        \if@mainmatter%
+          \@chapapp\ \thechapter. \ %
+        \fi
+        ##1}%
+    }%
+  \fi%
+}
 
-\makepagestyle{plainruled}
-\makeevenhead{plainruled}{\footnotesize\textit{\thepage}}{}{}
-\makeoddhead{plainruled}{}{}{\footnotesize\textit{\thepage}}
-\makeheadrule{plainruled}{\textwidth}{\normalrulethickness}
+\newif\if@disableheads\@disableheadsfalse
+\makeevenhead{plain}{%
+  \if@mainmatter%
+  \else%
+    \if@headerson%
+      \if@disableheads%
+      \else%
+        \footnotesize\textit{\thepage}%
+      \fi%
+    \fi%
+  \fi%
+}{}{}
+\makeoddhead{plain}{}{}{%
+  \if@mainmatter%
+  \else%
+    \if@headerson%
+      \if@disableheads%
+      \else%
+        \footnotesize\textit{\thepage}%
+      \fi%
+    \fi%
+  \fi%
+}
+\makeheadrule{plain}{%
+  \if@mainmatter%
+    0pt%
+  \else%
+    \if@headerson%
+      \if@disableheads%
+        0pt%
+      \else%
+        \plainheadrunwidth%
+      \fi%
+    \else%
+      0pt%
+    \fi%
+  \fi%
+}{%
+  \if@mainmatter%
+    0pt%
+  \else%
+    \if@headerson%
+      \if@disableheads%
+        0pt%
+      \else%
+        \normalrulethickness%
+      \fi%
+    \else%
+      0pt%
+    \fi%
+  \fi%
+}
+\makeevenfoot{plain}{%
+  \if@headerson%
+  \else%
+    \small\thepage%
+  \fi%
+}{}{}
+\makeoddfoot{plain}{}{}{%
+  \if@headerson%
+  \else%
+    \small\thepage%
+  \fi%
+}
 
 %%
 %% **`\chapterauthor`**`{` *Имя автора главы* `}` Определяет
@@ -951,40 +1015,17 @@
 
 \def\@prechapter{}
 \newif\if@prechapterset\@prechaptersetfalse
-\def\normalmainchapterpagestyle{%
-  \if@headerson%
-    \thispagestyle{empty}%
-  \else%
-    \thispagestyle{chapter}%
-  \fi%
-}
-\def\normalotherchapterpagestyle{%
-  \if@headerson%
-    \thispagestyle{plainruled}%
-  \else%
-    \thispagestyle{chapter}%
-  \fi%
-}
-\def\otherchapterpagestyle{\normalotherchapterpagestyle}
-\def\mainchapterpagestyle{\normalmainchapterpagestyle}
 \NewDocumentCommand \setprechapter { s m }
   {%
     \global\def\@prechapter{#2}%
     \@prechaptersettrue%
     \IfBooleanTF{#1}
-      {%
-        \global\def\otherchapterpagestyle{\thispagestyle{empty}}%
-        \global\def\mainchapterpagestyle{\thispagestyle{empty}}%
-      }
-      {%
-        \global\def\otherchapterpagestyle{\normalotherchapterpagestyle}%
-        \global\def\mainchapterpagestyle{\normalmainchapterpagestyle}%
-      }
+      {\@disableheadstrue}
+      {\@disableheadsfalse}%
   }
 \newcommand{\clearprechapter}{%
   \@prechaptersetfalse%
-  \global\def\otherchapterpagestyle{\normalotherchapterpagestyle}%
-  \global\def\mainchapterpagestyle{\normalmainchapterpagestyle}%
+  \@disableheadsfalse%
   \global\def\@prechapter{}%
 }
 \newcommand{\printprechapter}{%
@@ -995,7 +1036,7 @@
 }
 
 \makechapterstyle{politizdat}{%
-  \headstyles{politizdat}%
+  %\chapterstyle{default}%
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
     \printprechapter%
@@ -1007,31 +1048,18 @@
     \else%
       \vspace*{\beforechapskip}%
     \fi%
+    \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
   }%
   \if@journal%
     \def\printchaptername{}%
     \def\chapternamenum{}%
     \def\printchapternum{}%
     \def\afterchapternum{}%
-    \def\chaptermark##1{%
-      \markboth{##1}{##1}%
-    }%
   \else%
     \def\printchaptername{\centering\textit{\large\@chapapp}}%
     \def\chapternamenum{\space}%
     \def\printchapternum{\textit{\large\thechapter}}%
     \def\afterchapternum{\par\nobreak\vspace{0.25em}}%
-    \def\chaptermark##1{%
-      \markboth{%
-        \if@mainmatter%
-          \@chapapp\ \thechapter. \ %
-        \fi
-        ##1}{%
-        \if@mainmatter%
-          \@chapapp\ \thechapter. \ %
-        \fi
-        ##1}%
-    }%
   \fi%
   \def\printchapternonum{}%
   \def\printchaptertitle##1{%
@@ -1093,7 +1121,6 @@
             }%
         }%
       \let\addcontentsline\wasaddcontentsline
-      \mainchapterpagestyle%
       \ifdefined\citereset\citereset\fi%
   }
 
@@ -1164,7 +1191,6 @@
       {%
         \addcontentsline{toc}{chapter}{#4}%
       }%
-    \otherchapterpagestyle%
     \nochapterauthor%
   }%
 
@@ -1176,7 +1202,6 @@
   }
 
 \renewcommand{\aftertoctitle}{%
-  \otherchapterpagestyle%
   \afterchaptertitle%
 }
   
@@ -1247,34 +1272,39 @@
 
 \makeheadstyles{politizdat}{%
   \headstyles{default}%
+  \chapterstyle{politizdat}%
   \renewcommand*{\thesection}{\arabic{section}}%
   \setsecheadstyle{\flushleft\large\bfseries}%
   \renewcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
   \renewcommand*{\thesubsection}{\asbuk{subsection}}%
   \renewcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
   \setsubsecheadstyle{\sloppy\centering\bfseries}%
-  \setsecnumdepth{subsection}%
 }
 
-\makeheadstyles{politizdat@anonsec}{%
-  \headstyles{default}%
-  \renewcommand*{\thesection}{\Roman{section}}%
-  \setsecheadstyle{\centering\large\bfseries}%
-  \renewcommand{\sectionsecnumformat}{\thesection}%
-  \renewcommand*{\thesubsection}{}%
-  \renewcommand{\subsectionsecnumformat}{}%
-  \setsubsecheadstyle{\sloppy\centering\bfseries}%
-  \setsecnumdepth{subsection}%
+\renewcommand{\cftchapterleader}{%
+  \cftdotfill{\cftdotsep}%
 }
+\setlength{\cftparskip}{0.125em}
+\let\pltzdt@numberline\numberline
+\renewcommand{\numberline}[1]{\pltzdt@numberline{#1\xperiod}}
+\setpnumwidth{2.5em}
+\setrmarg{2.75em}
+\if@sectoc%
+  \cftsetindents{section}{0em}{1.5em}%
+\fi%
+\cftsetindents{subsection}{2.5em}{1.5em}%
 
 %%
 %% **`\nextsection`**  Начинает новый раздел (section) без названия,
 %% порядковый номер которого набирается заглавной римской цифрой.
+\newcounter{nextsectionnum}[chapter]%
+\setcounter{nextsectionnum}{0}%
+\newcommand{\nosectionmark}[1]{}%
 \newcommand{\nextsection}{%
-  \def\tmp@rightmark{\rightmark}%
-  \headstyles{politizdat@anonsec}%
-  \section{}%
-  \markright{\tmp@rightmark}%
+  \setsecnumdepth{chapter}%
+  \stepcounter{nextsectionnum}%
+  \let\sectionmark\nosectionmark%
+  \section[]{\protect\centering\Roman{nextsectionnum}}%
 }
 
 \let\pltzdt@memsection\section
@@ -1330,21 +1360,6 @@
     \@afterindenttrue%
     \@afterheading%
   }
-  
-\renewcommand{\cftchapterleader}{%
-  \cftdotfill{\cftdotsep}%
-}
-\setlength{\cftparskip}{0.125em}
-\let\pltzdt@numberline\numberline
-\renewcommand{\numberline}[1]{\pltzdt@numberline{#1\xperiod}}
-
-\if@sectoc%
-  \cftsetindents{section}{0em}{1.5em}
-\fi%
-  
-\cftsetindents{subsection}{2.5em}{1.5em}
-\setpnumwidth{2.5em}
-\setrmarg{2.75em}
 
 \NewDocumentCommand \chapterend { g }
   {%
@@ -2512,7 +2527,10 @@
   
 } %\AfterPackage{biblatex}
 
-\chapterstyle{politizdat}
+\headstyles{politizdat}%
+\pagenumbering{arabic}%
+\nouppercaseheads%
+\setsecnumdepth{subsection}%
 
 % Конец.
 \endinput
