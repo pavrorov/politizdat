@@ -25,6 +25,10 @@ FIXBBL =
 ## Запуск автокорректора --- командой `make autocorr`.
 ## Для принятия или отката изменений автокорректора есть
 ## команды `make approve` и `make restore` соответственно.
+##
+## Кроме автокорректора есть ещё команда `make typecheck` для
+## поиска "подозрительных" мест в наборе, которые не обязательно
+## являются ошибками, но требуют ручного контроля.
 
 
 # -----
@@ -102,10 +106,13 @@ checkbox: $(NAME).log
 
 remake: clean pdf
 
+export PARTTEXFILES
 APPLYTOFILES = $(addprefix ../,$(PARTTEXFILES))
 export APPLYTOFILES
 autocorr:
 	$(MAKE) -C scripts
+typecheck:
+	$(MAKE) -C scripts typecheck DIR=..
 restore:
 	$(MAKE) -C scripts restore
 approve:

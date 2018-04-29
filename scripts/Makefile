@@ -1,8 +1,10 @@
 
 SCRIPTS = typeset.sed postfix.sed shortwords.sed
+TYPECHECK = typecheck.sh
 
 SCRIPTDIR = $(dir $(lastword $(MAKEFILE_LIST)))
 ASCRIPTS = $(addprefix $(SCRIPTDIR),$(SCRIPTS))
+ATYPECHECK = $(abspath $(addprefix $(SCRIPTDIR),$(TYPECHECK)))
 MAXSCRIPTRETRY = 10
 MAXSCRIPTCYCLES = 5
 
@@ -52,7 +54,9 @@ default: autocorr
 
 applyscripts: $(APPLYTOFILES:=.bak)
 
-autocorr: checkscripts applyscripts
+autocorr: doautocorr typecheck
+
+doautocorr: checkscripts applyscripts
 	@modified=0; \
 	for t in $(APPLYTOFILES); do \
 		echo "$$t" $(DIFFOUT); \
@@ -70,6 +74,19 @@ autocorr: checkscripts applyscripts
 		exit 2; \
 	fi; \
 	echo "*** Good news: the autocorrector has changed nothing. ***"
+
+typecheck: $(ATYPECHECK)
+	@ret=0; \
+	$(if $(DIR),cd $(DIR);) \
+	for t in $(if $(DIR),$(PARTTEXFILES),$(APPLYTOFILES)); do \
+		echo "$$t" $(DIFFOUT); \
+		$(ATYPECHECK) "$$t" || ret=$$?; \
+	done; \
+	if [ $$ret -ne 0 ]; then \
+		echo "*** The type check has found some possible errors. ***"; \
+		echo "*** Please, check the listed lines manually. ***"; \
+		exit $$ret; \
+	fi
 
 restore:
 	@for t in $(APPLYTOFILES); do \
