@@ -879,9 +879,6 @@
   \fi%
 }
 
-\sloppybottom
-\applylayout
-
 % Настройка стиля оформления страниц
 
 \makeevenhead{headings}{\footnotesize\textit{\thepage}}
@@ -1256,16 +1253,9 @@
   }
 
 \AtBeginDocument{%
-  \footmarkstyle{\textsuperscript{#1}\space}
-  \indentafterchapter
-  \mainmatter
-  \fussy
-
-  \clubpenalty=10000
-  \widowpenalty=10000
-  \interfootnotelinepenalty=10000
-  \brokenpenalty=0
-  \linenottooshort[4em]
+  \mainmatter%
+  \fussy%
+  \linenottooshort[4em]%
 }
 
 \renewcommand{\tocheadstart}{%
@@ -2539,10 +2529,19 @@
   
 } %\AfterPackage{biblatex}
 
+% Инициализация
+\sloppybottom%
+\applylayout%
+\footmarkstyle{\textsuperscript{#1}\space}%
+\indentafterchapter%
 \headstyles{politizdat}%
 \pagenumbering{arabic}%
 \nouppercaseheads%
 \setsecnumdepth{subsection}%
-
+\clubpenalty=10000%
+\widowpenalty=10000%
+\interfootnotelinepenalty=10000%
+\brokenpenalty=0%
+  
 % Конец.
 \endinput
