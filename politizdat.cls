@@ -907,15 +907,19 @@
 \makepsmarks{headings}{%
   \if@skipchapnums%
     \def\chaptermark##1{%
-      \markboth{##1}{##1}%
+      \markboth{\if@divisionset\thedivision\else ##1\fi}{##1}%
     }%
   \else%
     \def\chaptermark##1{%
       \markboth{%
-        \if@mainmatter%
-          \@chapapp\ \thechapter. \ %
-        \fi
-        ##1}{%
+        \if@divisionset%
+          \thedivision%
+        \else%
+          \if@mainmatter%
+            \@chapapp\ \thechapter. \ %
+          \fi
+          ##1%
+        \fi}{%
         \if@mainmatter%
           \@chapapp\ \thechapter. \ %
         \fi
@@ -1112,6 +1116,51 @@
   }%
 }
 
+%%
+%% **`\division`**`{` *рубрика* `}`  Определяет рубрику или
+%% тематический раздел. Указанный заголовок выводится в оглавление
+%% (команда со звёздочкой этого не делает) и в колонтитул на чётных
+%% (левых) страницах. Название главы в этом случае выводится
+%% на нечётных (правых) страницах. Рубрика очищается командами
+%% `\frontmatter`, `\mainmatter`, `\backmatter`, `\book` и `\part`.
+
+\newif\if@divisionset\@divisionsetfalse%
+\def\thedivision{}
+\NewDocumentCommand \division { s m }
+  {%
+    \IfEmpty{#2}{\@divisionsetfalse}{%
+      \global\def\thedivision{#2}%
+      \@divisionsettrue%
+    }%
+    \IfBooleanTF{#1}{}
+      {%
+        \addtocontents{toc}
+          {%
+            \protect\normalfont%
+            \protect\vspace{2.0em}%
+            \protect\centering%
+            \protect\bfseries%
+            \protect\itshape%
+            #2%
+            \protect\vspace{0.25em}%
+          }%
+      }
+  }
+
+\let\pltzdt@book\book%
+\RenewDocumentCommand \book { s m }
+  {%
+    \@divisionsetfalse%
+    \IfBooleanTF{#1}{\pltzdt@book*{#2}}{\pltzdt@book{#2}}%
+  }
+
+\let\pltzdt@part\part%
+\RenewDocumentCommand \part { s m }
+  {%
+    \@divisionsetfalse%
+    \IfBooleanTF{#1}{\pltzdt@part*{#2}}{\pltzdt@part{#2}}%
+  }
+  
 \let\pltzdt@memchapter\chapter
 \newcommand{\dontaddcontentsline}[3]{}
 \NewDocumentCommand \pltzdt@chaptercommon { s o o m }
@@ -1231,6 +1280,7 @@
 \newif\if@frontnormal\@frontnormaltrue
 \RenewDocumentCommand \frontmatter { s }
   {%
+    \@divisionsetfalse%
     \IfBooleanTF{#1}%
       {\pltzdt@memfront*}%
       {%
@@ -1244,6 +1294,7 @@
 \let\pltzdt@memmain\mainmatter
 \RenewDocumentCommand \mainmatter { s }  
   {%
+    \@divisionsetfalse%
     \IfBooleanTF{#1}%
       {\pltzdt@memmain*}%
       {%
@@ -1258,6 +1309,7 @@
   
 \let\pltzdt@memback\backmatter
 \renewcommand{\backmatter}{%
+  \@divisionsetfalse%
   \pltzdt@memback%
   \renewcommand{\chapter}{\backchapter}%
 }
@@ -1349,6 +1401,11 @@
   \let\sectionmark\nosectionmark%
   \section[]{\protect\centering\Roman{nextsectionnum}}%
 }
+
+\let\pltzdt@sectionmark\sectionmark%
+\renewcommand{\sectionmark}[1]{%
+  \if@divisionset\else\pltzdt@sectionmark{#1}\fi%
+}%
 
 \let\pltzdt@memsection\section
 \RenewDocumentCommand \section { s o o m }
