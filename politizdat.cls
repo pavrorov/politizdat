@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2015/01/29`
-\ProvidesClass{politizdat}[2015/01/29 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/06`
+\ProvidesClass{politizdat}[2018/05/06 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -68,17 +68,17 @@
 %%
 %% * **`journal`** Журнальное издание. Во всём аналогично книжному,
 %% только по умолчанию выбирается больший формат книжного блока
-%% 70x108/16 и перед названием главы не ставится префикс «Глава N».
+%% 70x108/16 и перед названием главы не ставится «Глава N».
 %% Кроме того, вместо заголовка «Оглавление» выводится заголовок
 %% «Содержание».
-\newif\if@journal\@journalfalse
+\newif\if@journal\@journalfalse%
 \DeclareOption {journal}
   {%
     \@journaltrue%
     \@inlinenotesfalse%
     \@inlinebibfalse%
     \@perpagetrue%
-    \ExecuteOptions {70x108/16,10pt,headerson}%
+    \ExecuteOptions {70x108/16,10pt,headerson,plainchapters,chapterdrop}%
     \setlinespread{0.9}%
   }
 
@@ -392,6 +392,19 @@
 %% заглавными буквами.
 \newif\if@noupcasechaps\@noupcasechapsfalse
 \DeclareOption {noupcasechaps} {\@noupcasechapstrue}
+
+%%
+%% * **`plainchapters`**  Не ставить «Глава N» перед названием главы.
+%% В режиме журнала включается автоматически.
+\newif\if@skipchapnums\@skipchapnumsfalse%
+\DeclareOption {plainchapters} {\@skipchapnumstrue}
+
+%%
+%% * **`chapterdrop`**  Использовать обычный отступ перед заголовком
+%% главы (`\beforechapskip`) в главном разделе книги (`\mainmatter`).
+%% В режиме журнала включается автоматически.
+\newif\if@chapterspace\@chapterspacefalse%
+\DeclareOption {chapterdrop} {\@chapterspacetrue}
 
 %%
 %% ### Прочие опции
@@ -892,7 +905,7 @@
 \makeheadrule{headings}{\textwidth}{\normalrulethickness}
 
 \makepsmarks{headings}{%
-  \if@journal%
+  \if@skipchapnums%
     \def\chaptermark##1{%
       \markboth{##1}{##1}%
     }%
@@ -993,15 +1006,6 @@
   \@chapterauthorsetfalse
   \global\def\thechapterauthor{}%
 }
-\newcommand{\printchapterauthor}{%
-  \if@chapterauthorset%
-    {%
-      \flushleft%
-      \Large\textit{\thechapterauthor}\vspace*{-\baselineskip}%
-      \par%
-    }%
-  \fi%
-}
 
 %% **`\setprechapter`**`{` *содержимое* `}` Определяет материал,
 %% который будет выведен перед названием следующей главы.
@@ -1030,7 +1034,27 @@
   \if@prechapterset%
     \@prechapter\par%
   \fi%
-  \printchapterauthor%
+}
+\newcommand{\printprechapterauthor}{%
+  \if@skipchapnums\if@chapterauthorset%
+    {%
+      \if@journal\flushleft\else\centering\fi%
+      \normalfont\Large\textit{\thechapterauthor}%
+      \if@journal\vspace*{-\baselineskip}%
+      \else\vspace*{0.5em}\fi%
+      \par%
+    }%
+  \fi\fi%
+}
+\newcommand{\printafterchapter}{%
+  \if@skipchapnums%
+  \else\if@chapterauthorset%
+    {%
+      \flushright%
+      \normalfont\Large\textit{(\thechapterauthor)}%
+      \par%
+    }%
+  \fi\fi%
 }
 
 \makechapterstyle{politizdat}{%
@@ -1038,17 +1062,19 @@
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
     \printprechapter%
+    \if@journal\printprechapterauthor\fi%
     \linespread{1.0}%
     \if@mainmatter%
-      \if@journal%
+      \if@chapterspace%
         \vspace*{\beforechapskip}%
       \fi%
     \else%
       \vspace*{\beforechapskip}%
     \fi%
+    \if@journal\else\printprechapterauthor\fi%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
   }%
-  \if@journal%
+  \if@skipchapnums%
     \def\printchaptername{}%
     \def\chapternamenum{}%
     \def\printchapternum{}%
@@ -1078,8 +1104,9 @@
     \protect\MakeTextUppercase{##1}%
   }
   \def\afterchaptertitle{%
-    \par\nobreak\vskip%
-    \afterchapskip%
+    \par\nobreak%
+    \printafterchapter%
+    \vskip\afterchapskip%
     \linespread{\pltzdt@linespread}%
     \clearprechapter%
   }%
@@ -1089,37 +1116,33 @@
 \newcommand{\dontaddcontentsline}[3]{}
 \NewDocumentCommand \pltzdt@chaptercommon { s o o m }
   {%
-      \let\wasaddcontentsline\addcontentsline
+    \IfEmpty{#2}{\def\@chaptoctitle{#4}}{\def\@chaptoctitle{#2}}%
+    \if@chapterauthorset%
+      \if@skipchapnums%
+        \def\@chaptocname{{\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.}\space{}\@chaptoctitle}%
+      \else%
+        \def\@chaptocname{\@chaptoctitle\protect\space{}\penalty-100{\protect\normalfont\protect\textit{\mbox{(\thechapterauthor)}}}}%
+      \fi%
+    \else%
+      \def\@chaptocname{\@chaptoctitle}%
+    \fi%
+    \let\wasaddcontentsline\addcontentsline%
+    \if@mainmatter\if@sectoc%
       \let\addcontentsline\dontaddcontentsline%
-      \IfEmpty{#2}
-        {%
-          \IfEmpty{#3}
-            {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*{#4}}
-                {\pltzdt@memchapter{#4}}%
-            }
-            {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*[#3]{#4}}
-                {\pltzdt@memchapter[#4][#3]{#4}}%
-            }%
-        }
-        {%
-          \IfEmpty{#3}
-            {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*[#2]{#4}}
-                {\pltzdt@memchapter[#2]{#4}}%
-            }
-            {%
-              \IfBooleanTF{#1}
-                {\pltzdt@memchapter*[#2][#3]{#4}}
-                {\pltzdt@memchapter[#2][#3]{#4}}%
-            }%
-        }%
-      \let\addcontentsline\wasaddcontentsline
-      \ifdefined\citereset\citereset\fi%
+    \fi\fi%
+    \IfEmpty{#3}
+      {%
+        \IfBooleanTF{#1}
+          {\pltzdt@memchapter*[#4]{#4}}
+          {\pltzdt@memchapter[\@chaptocname][#4]{#4}}%
+      }
+      {%
+        \IfBooleanTF{#1}
+          {\pltzdt@memchapter*[#3]{#4}}
+          {\pltzdt@memchapter[\@chaptocname][#3]{#4}}%
+      }%
+    \let\addcontentsline\wasaddcontentsline%
+    \ifdefined\citereset\citereset\fi%
   }
 
 \NewDocumentCommand \mainchapter { s o o m }
@@ -1139,13 +1162,11 @@
             \protect\vspace{1.5em}%
             \protect\centering%
           }%
-        \if@journal%
+        \if@skipchapnums%
           \if@chapterauthorset%
             \addtocontents{toc}
               {%
                 \protect\textit{\thechapterauthor}%
-                \protect\par\nobreak%
-                \protect\vspace{0.25em}%
               }%
           \fi%
         \else%
@@ -1155,15 +1176,13 @@
               \protect\par\nobreak%
               \protect\vspace{0.25em}%
             }%
-          \if@chapterauthorset%
-            \addtocontents{toc}
-              {%
-                \protect\textit{(\thechapterauthor)}%
-                \protect\vspace{0.25em}%
-              }%
-          \fi%
         \fi%
-        \addtocontents{toc}{\protect\bfseries}%
+        \addtocontents{toc}
+          {%
+            \protect\par\nobreak%
+            \protect\vspace{0.25em}%
+            \protect\bfseries%
+          }%
         \if@noupcasechaps%
           \addtocontents{toc}{\@chaptitle}%
         \else%
@@ -1172,16 +1191,18 @@
               {\protect\small\protect\MakeTextUppercase{\@chaptitle}}%
             }%
         \fi%
-        \addtocontents{toc}{\protect\vspace{0.5em}}%
-        \else% sectoc
-        \if@chapterauthorset%
-          \addcontentsline{toc}{chapter}
-            {%
-              {\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.~---}\space{}\@chaptitle%
-            }%
+        \if@skipchapnums%
         \else%
-          \addcontentsline{toc}{chapter}{\@chaptitle}%
-        \fi%  
+          \if@chapterauthorset%
+            \addtocontents{toc}
+              {%
+                \protect\par\nobreak%
+                \protect\normalfont%
+                \protect\textit{(\thechapterauthor)}%
+              }%
+          \fi%
+        \fi%
+        \addtocontents{toc}{\protect\par\nobreak\protect\vspace{0.5em}}%
         \fi% sectoc
       }%
       \nochapterauthor%
@@ -1192,10 +1213,6 @@
     \IfBooleanTF{#1}
       {\pltzdt@chaptercommon*[#2][#3]{#4}}
       {\pltzdt@chaptercommon[#2][#3]{#4}}%
-    \IfBooleanF{#1}
-      {%
-        \addcontentsline{toc}{chapter}{#4}%
-      }%
     \nochapterauthor%
   }%
 
@@ -1283,14 +1300,39 @@
   \cftdotfill{\cftdotsep}%
 }
 \setlength{\cftparskip}{0.125em}
-\let\pltzdt@numberline\numberline
-\renewcommand{\numberline}[1]{\pltzdt@numberline{#1\xperiod}}
+\let\pltzdt@numberline\numberline%
+\renewcommand{\numberline}[1]{%
+  \pltzdt@numberline{%
+    #1%
+    \ifthenelse {\equal {\cftwhatismyname} {subsection}}
+      {)}
+      {.}%
+  }%
+}%
+\newlength{\cftafternumskip}\setlength{\cftafternumskip}{0.5em}%
+\renewcommand{\numberlinebox}[2]{\makebox[#1][r]{#2\hskip\cftafternumskip}}%
 \setpnumwidth{2.5em}
 \setrmarg{2.75em}
 \if@sectoc%
   \cftsetindents{section}{0em}{1.5em}%
+  \cftsetindents{subsection}{2.5em}{1.5em}%
+\else%
+  \cftsetindents{chapter}{0em}{1.5em}%
+  \cftsetindents{section}{2.0em}{1.5em}%
+  \cftsetindents{subsection}{4.5em}{1.5em}%
 \fi%
-\cftsetindents{subsection}{2.5em}{1.5em}%
+\renewcommand{\chapternumberline}[1]{%
+  \chapternumberlinehook{#1}%
+  \if@skipchapnums%
+  \else%
+  {%
+    \normalfont%
+    \itshape%
+    \@chapapp\space{}#1.%
+    \hskip\cftafternumskip%
+  }%
+  \fi%
+}
 
 %%
 %% **`\nextsection`**  Начинает новый раздел (section) *без названия*,
