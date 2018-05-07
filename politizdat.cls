@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/06`
-\ProvidesClass{politizdat}[2018/05/06 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/07`
+\ProvidesClass{politizdat}[2018/05/07 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -395,7 +395,11 @@
 
 %%
 %% * **`plainchapters`**  Не ставить «Глава N» перед названием главы.
-%% В режиме журнала включается автоматически.
+%% В режиме журнала включается автоматически. Для книг этот
+%% режим автоматически включает и опцию `authorinhead`, т.е. печать
+%% имени автора главы (см. `\chapterauthor`) в
+%% колонтитуле. Используйте опцию `noauthorinhead` если этого не
+%% требуется.
 \newif\if@skipchapnums\@skipchapnumsfalse%
 \DeclareOption {plainchapters} {\@skipchapnumstrue}
 
@@ -405,6 +409,33 @@
 %% В режиме журнала включается автоматически.
 \newif\if@chapterspace\@chapterspacefalse%
 \DeclareOption {chapterdrop} {\@chapterspacetrue}
+
+%%
+%% * **`authorinhead`**  Печатать имя автора главы
+%% (см. `\chapterauthor`) в колонтитуле. Для книг без нумерации глав
+%% (опция `plainchapters`) включается автоматически (а для журналов
+%% автоматически не включается).
+\newif\if@authorinhead\@authorinheadfalse%
+\DeclareOption {authorinhead} {
+  \@authorinheadtrue%
+  \if@skipchapnums%
+  \else%
+    \ClassWarningNoLine {politizdat}{%
+      The `authorinhead' option works in\MessageBreak
+      `plainchapters' mode only -- turning the latter on.
+    }%
+    \@skipchapnumstrue%
+  \fi%
+}
+
+%%
+%% * **`noauthorinhead`**  Не печатать имя автора главы в колонтитуле.
+%% См. подробнее описание опций `authorinhead` и `plainchapters`.
+\newif\if@noauthorinhead\@noauthorinheadfalse%
+\DeclareOption {noauthorinhead} {%
+  \@authorinheadfalse%
+  \@noauthorinheadtrue%
+}
 
 %%
 %% ### Прочие опции
@@ -457,7 +488,22 @@
 % Обработка опций
 \ProcessOptions\relax
 
-
+% Для книг без нумерации глав автоматически
+% включается режим `plainchapters`.
+\if@journal%
+\else%
+  \if@skipchapnums%
+    \if@noauthorinhead%
+    \else%
+      \@authorinheadtrue%
+      \ClassInfo {politizdat}{%
+        For books the `plainchapters' mode implies\MessageBreak
+        `authorinhead' option. Use `noauthorinhead' to\MessageBreak
+        explicitly turn it off.}
+    \fi%
+  \fi%
+\fi%
+  
 % Загрузка базового класса
 \if@draftmode%
   % Устанавливается режим черновика
@@ -905,27 +951,26 @@
 \makeheadrule{headings}{\textwidth}{\normalrulethickness}
 
 \makepsmarks{headings}{%
-  \if@skipchapnums%
-    \def\chaptermark##1{%
-      \markboth{\if@divisionset\thedivision\else ##1\fi}{##1}%
-    }%
-  \else%
-    \def\chaptermark##1{%
-      \markboth{%
-        \if@divisionset%
-          \thedivision%
-        \else%
-          \if@mainmatter%
-            \@chapapp\ \thechapter. \ %
-          \fi
-          ##1%
-        \fi}{%
-        \if@mainmatter%
-          \@chapapp\ \thechapter. \ %
-        \fi
-        ##1}%
-    }%
-  \fi%
+  \def\chaptermark##1{%
+    \def\@headprefix{}%
+    \if@mainmatter
+      \if@skipchapnums%
+        \if@authorinhead\if@chapterauthorset%
+          \def\@headprefix{\thechapterauthor. \ }%
+        \fi\fi%
+      \else%
+        \def\@headprefix{\@chapapp\ \thechapter. \ }%
+      \fi%
+    \fi%
+    \markboth{%
+      \if@divisionset%
+        \thedivision%
+      \else%
+        \@headprefix{}##1%
+      \fi%
+    }
+    {\@headprefix{}##1}%
+  }%
 }
 
 \newif\if@disableheads\@disableheadsfalse
