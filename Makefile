@@ -118,7 +118,8 @@ restore:
 approve:
 	$(MAKE) -C scripts approve
 
-.PHONY: clean autocorr restore approve checkbox remake diff clean-diff
+.PHONY: clean autocorr restore approve checkbox remake diff clean-diff \
+		project-rename
 
 DIFFRES = 600
 diff: | clean-diff
@@ -167,3 +168,19 @@ W2L_CONF = w2l.conf.xml
 %.tex: %.odt
 	w2l -latex -config=$(W2L_CONF) $< $@
 	sed -i -f scripts/w2l.post.sed $@
+
+## ---
+
+define newline
+
+
+endef
+
+MAKEFILE = $(lastword $(MAKEFILE_LIST))
+TOPDIR = $(dir $(MAKEFILE))
+project-rename:
+	@$(if $(TO),:,echo "Usage: project-rename TO=<new name>"; exit 1)
+	$(foreach p,$(PARTS),$(if $(wildcard $(TOPDIR)/.git),git) mv $(BASENAME).$(p).tex $(TO).$(p).tex$(newline))
+	$(if $(wildcard $(TOPDIR)/.git),git) mv $(BASENAME).tex $(TO).tex
+	sed -i$(foreach p,$(PARTS), -e 's/\\input{$(BASENAME).$(p)}/\\input{$(TO).$(p)}/') $(TO).tex
+	sed -i -e 's/^BASENAME = .*/BASENAME = $(TO)/' $(MAKEFILE)
