@@ -1248,6 +1248,7 @@
   {%
     \cleardoublepage%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
+    \@tocskipchapauthorfalse%
     \@divisionsetfalse%
     \IfBooleanTF{#1}{\pltzdt@book*{#2}}{\pltzdt@book{#2}}%
   }
