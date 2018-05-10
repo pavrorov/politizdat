@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/07`
-\ProvidesClass{politizdat}[2018/05/07 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/10`
+\ProvidesClass{politizdat}[2018/05/10 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -1103,7 +1103,47 @@
     }%
   \fi\fi%
 }
+
+%%
+%% **`\chaptertitleaddon`**`{` *текст* `}`  Печатает дополнение к
+%% названию главы. В том случае, если после названия главы печатается
+%% имя автора, то придётся использовать команду
+%% `\setchaptertitleaddon` для того, чтобы предварительно задать текст
+%% дополнения.
+\newcommand{\chaptertitleaddon}[1]{%
+  \vskip-\afterchapskip%
+  {%
+    \centering\normalsize\normalfont\bfseries%
+    #1\par%
+  }%
+  \vskip\afterchapskip%
+}
+
+%%
+%% **`\setchaptertitleaddon`**`{` *текст* `}`  Задаёт текст дополнения к
+%% названию главы. Текст будет напечатан сразу после названия. Команда
+%% предназначена для случая, когда после названия главы автоматически
+%% печетается заданное ранее имя автора. Для простых случаев можно
+%% использовать команду `\chaptertitleaddon`, которая просто печатает
+%% дополнение.
+%%
+%% **`\clearchaptertitleaddon`**  Отменяет действие команды
+%% `\setchaptertitleaddon`.
+\def\thechaptertitleaddon{}
+\newif\if@chaptertitleaddonset\@chaptertitleaddonsetfalse
+\newcommand{\setchaptertitleaddon}[1]{%
+  \global\def\thechaptertitleaddon{#1}%
+  \@chaptertitleaddonsettrue
+}
+\newcommand{\clearchaptertitleaddon}{%
+  \@chaptertitleaddonsetfalse
+  \global\def\thechaptertitleaddon{}%
+}
 \newcommand{\printafterchapter}{%
+  \if@chaptertitleaddonset%
+    \normalsize\normalfont\bfseries%
+    \thechaptertitleaddon\par%
+  \fi%
   \if@skipchapnums%
   \else\if@chapterauthorset%
     {%
@@ -1308,6 +1348,7 @@
         \fi% sectoc
       }%
       \nochapterauthor%
+      \clearchaptertitleaddon%
   }%
 
 \NewDocumentCommand \frontchapter { s o o m }
@@ -1316,6 +1357,7 @@
       {\pltzdt@chaptercommon*[#2][#3]{#4}}
       {\pltzdt@chaptercommon[#2][#3]{#4}}%
     \nochapterauthor%
+    \clearchaptertitleaddon%  
   }%
 
 \NewDocumentCommand \backchapter { s o o m }
