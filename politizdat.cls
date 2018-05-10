@@ -1240,6 +1240,8 @@
       }
   }
 
+\newcommand{\dontaddcontentsline}[3]{}
+  
 \let\pltzdt@book\book%
 \RenewDocumentCommand \book { s m }
   {%
@@ -1248,16 +1250,31 @@
     \IfBooleanTF{#1}{\pltzdt@book*{#2}}{\pltzdt@book{#2}}%
   }
 
+\newcommand{\tocpartbreak}[1]{%
+  \addvspace{\cftbeforepartskip}%
+  {%
+    \centering\cftpartfont%
+    #1%
+    \par\nobreak%
+  }%
+}
+
 \let\pltzdt@part\part%
 \RenewDocumentCommand \part { s m }
   {%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
     \@divisionsetfalse%
+    \let\wasaddcontentsline\addcontentsline%
+    \let\addcontentsline\dontaddcontentsline%
     \IfBooleanTF{#1}{\pltzdt@part*{#2}}{\pltzdt@part{#2}}%
+    \IfBooleanF{#1}
+      {%
+        \addtocontents{toc}{\protect\tocpartbreak{#2}}%
+      }%
+    \let\addcontentsline\wasaddcontentsline%
   }
   
 \let\pltzdt@memchapter\chapter
-\newcommand{\dontaddcontentsline}[3]{}
 \NewDocumentCommand \pltzdt@chaptercommon { s o o m }
   {%
     \IfEmpty{#2}{\def\@chaptoctitle{#4}}{\def\@chaptoctitle{#2}}%
@@ -1486,6 +1503,8 @@
   }%
   \fi%
 }
+\renewcommand*{\cftpartname}{\partname}%
+\renewcommand*{\cftpartfont}{\Large\bfseries}%
 
 %%
 %% **`\nextsection`**  Начинает новый раздел (section) *без названия*,
