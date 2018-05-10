@@ -1051,14 +1051,15 @@
 %% имя автора, которое выводится перед названием следующей главы
 %% и в оглавлении.
 %%
-%% **`\nochapterauthor`**` Отменяет действие команды `\chapterauthor`.
-
-\def\thechapterauthor{}
-\newif\if@chapterauthorset\@chapterauthorsetfalse
+\def\thechapterauthor{}%
+\newif\if@chapterauthorset\@chapterauthorsetfalse%
 \newcommand{\chapterauthor}[1]{%
   \global\def\thechapterauthor{#1}%
-  \@chapterauthorsettrue
+  \@chapterauthorsettrue%
 }
+
+%%
+%% **`\nochapterauthor`**` Отменяет действие команды `\chapterauthor`.
 \newcommand{\nochapterauthor}{%
   \@chapterauthorsetfalse
   \global\def\thechapterauthor{}%
@@ -1259,10 +1260,20 @@
   }%
 }
 
+
+%%
+%% **`\tocskipauthor`**` Выключает печать имени автора главы в
+%% оглавлении для текущей части.
+\newif\if@tocskipchapauthor\@tocskipchapauthorfalse%
+\newcommand{\tocskipauthor}{%
+  \@tocskipchapauthortrue%
+}
+
 \let\pltzdt@part\part%
 \RenewDocumentCommand \part { s m }
   {%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
+    \@tocskipchapauthorfalse%
     \@divisionsetfalse%
     \let\wasaddcontentsline\addcontentsline%
     \let\addcontentsline\dontaddcontentsline%
@@ -1273,11 +1284,12 @@
       }%
     \let\addcontentsline\wasaddcontentsline%
   }
-  
+
 \let\pltzdt@memchapter\chapter
 \NewDocumentCommand \pltzdt@chaptercommon { s o o m }
   {%
     \IfEmpty{#2}{\def\@chaptoctitle{#4}}{\def\@chaptoctitle{#2}}%
+    \if@tocskipchapauthor\def\@chaptocname{\@chaptoctitle}\else%
     \if@chapterauthorset%
       \if@skipchapnums%
         \def\@chaptocname{{\protect\normalfont\protect\textit{\thechapterauthor}\unskip{}.}\space{}\@chaptoctitle}%
@@ -1287,6 +1299,7 @@
     \else%
       \def\@chaptocname{\@chaptoctitle}%
     \fi%
+    \fi% tocskipchapauthor
     \let\wasaddcontentsline\addcontentsline%
     \if@mainmatter\if@sectoc%
       \let\addcontentsline\dontaddcontentsline%
