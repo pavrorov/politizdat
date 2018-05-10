@@ -1236,7 +1236,7 @@
       {%
         \IfBooleanTF{#1}
           {\pltzdt@memchapter*[#4]{#4}}
-          {\pltzdt@memchapter[\@chaptocname][#4]{#4}}%
+          {\pltzdt@memchapter[\@chaptocname]{#4}}%
       }
       {%
         \IfBooleanTF{#1}
@@ -1250,7 +1250,7 @@
 \NewDocumentCommand \mainchapter { s o o m }
   {%
     \IfBooleanTF{#1}
-      {\pltzdt@chaptercommon*[#2][#3]{#4}}
+      {\pltzdt@chaptercommon*[#2]{#4}}
       {\pltzdt@chaptercommon[#2][#3]{#4}}%
     \IfBooleanF{#1}
       {%
