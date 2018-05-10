@@ -1243,6 +1243,7 @@
 \let\pltzdt@book\book%
 \RenewDocumentCommand \book { s m }
   {%
+    \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
     \@divisionsetfalse%
     \IfBooleanTF{#1}{\pltzdt@book*{#2}}{\pltzdt@book{#2}}%
   }
@@ -1250,6 +1251,7 @@
 \let\pltzdt@part\part%
 \RenewDocumentCommand \part { s m }
   {%
+    \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
     \@divisionsetfalse%
     \IfBooleanTF{#1}{\pltzdt@part*{#2}}{\pltzdt@part{#2}}%
   }
