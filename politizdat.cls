@@ -1246,6 +1246,7 @@
 \let\pltzdt@book\book%
 \RenewDocumentCommand \book { s m }
   {%
+    \cleardoublepage%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
     \@divisionsetfalse%
     \IfBooleanTF{#1}{\pltzdt@book*{#2}}{\pltzdt@book{#2}}%
@@ -1272,6 +1273,7 @@
 \let\pltzdt@part\part%
 \RenewDocumentCommand \part { s m }
   {%
+    \cleardoublepage%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
     \@tocskipchapauthorfalse%
     \@divisionsetfalse%
