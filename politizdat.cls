@@ -438,6 +438,14 @@
 }
 
 %%
+%% * **`centersec`**  Заголовки разделов по центру.
+\newif\if@centersec\@centersecfalse%
+\DeclareOption {centersec} {%
+  \@centersectrue%
+}
+
+
+%%
 %% ### Прочие опции
 %%
 %% В режиме по умолчанию, попытка указать не определённую явно в
@@ -1382,11 +1390,15 @@
 \newcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
 \setsecnumformat{\csname #1secnumformat\endcsname}%
 
+\newcommand{\secalign}{%
+  \if@centersec\centering\else\flushleft\fi%
+}
+
 \makeheadstyles{politizdat}{%
   \headstyles{default}%
   \chapterstyle{politizdat}%
   \renewcommand*{\thesection}{\arabic{section}}%
-  \setsecheadstyle{\flushleft\large\bfseries}%
+  \setsecheadstyle{\secalign\large\bfseries}%
   \renewcommand{\sectionsecnumformat}{\thesection.\hspace{0.5em}}%
   \renewcommand*{\thesubsection}{\asbuk{subsection}}%
   \renewcommand{\subsectionsecnumformat}{\thesubsection)\hspace{0.5em}}%
