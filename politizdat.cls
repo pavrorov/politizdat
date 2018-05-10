@@ -1275,8 +1275,8 @@
     \IfEmpty{#3}
       {%
         \IfBooleanTF{#1}
-          {\pltzdt@memchapter*[#4]{#4}}
-          {\pltzdt@memchapter[\@chaptocname]{#4}}%
+          {\pltzdt@memchapter*[\@chaptoctitle]{#4}}
+          {\pltzdt@memchapter[\@chaptocname][\@chaptoctitle]{#4}}%
       }
       {%
         \IfBooleanTF{#1}
