@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/10`
-\ProvidesClass{politizdat}[2018/05/10 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/12`
+\ProvidesClass{politizdat}[2018/05/12 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -2209,13 +2209,9 @@
 %% `:end`, и, при необходимости, могут использоваться независимо друг
 %% от друга.
 %%
-%% ** `\rangeref`**`{` *метка* `}
-%% ** `\rangerefhic`**`{` *метка* `}
-%%
-%% Первая команда набирает `с.~N` или `с.~N--M` автоматически,
-%% в зависимости от того, на одно или на разные страницы указывают
-%% метки начала и конца фрагмента. Вторая команда дополняет вывод
-%% словами «настоящего издания».
+%% ** `\rangeref`**`{` *метка* `}  Печатает `N` или `N--M`
+%% автоматически, в зависимости от того, на одно или на разные
+%% страницы указывают метки начала и конца фрагмента.
 
 \NewDocumentCommand \startlabel { m }
   {%
@@ -2232,14 +2228,9 @@
 
 \NewDocumentCommand \rangeref { m }
   {%
-    с.~\ifthenelse {\equal {\pageref{#1:start}} {\pageref{#1:end}}}
+    \ifthenelse {\equal {\pageref{#1:start}} {\pageref{#1:end}}}
       {\pageref{#1:start}}
       {\pageref{#1:start}--\pageref{#1:end}}%
-  }
-
-\NewDocumentCommand \rangerefhic { m }
-  {%
-    \rangeref{#1} настоящего издания%
   }
 
 %%
