@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/12`
-\ProvidesClass{politizdat}[2018/05/12 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/14`
+\ProvidesClass{politizdat}[2018/05/14 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -527,6 +527,7 @@
 \RequirePackage{etoolbox}
 \RequirePackage{ifthen}
 \RequirePackage{hyphenat}
+\RequirePackage{csquotes}
   
 % Вспомогательная команда-условный оператор. Условие выполняется,
 % если аргумент задан пустым, либо вообще не задан.
@@ -563,7 +564,6 @@
 \newif\if@switchfont\@switchfonttrue
 \AtEndPreamble
 {%
-  \@ifpackageloaded{csquotes}{}{\usepackage{csquotes}}%
   \@ifpackageloaded{polyglossia}{\@switchfontfalse}{}%
   % Тире
   \ifdefined\cyrdash\let\cyrdash\textemdash\fi%
