@@ -348,20 +348,21 @@
 %%
 %% * **`draft`** Режим черновика. В режиме черновика на полях издания
 %% ставятся пометки об ошибках набора, а также выводятся *рабочие
-%% заметки* (см. `\notice`, см. также `noticeoff`).
+%% заметки* (см. `\notice`, см. также `noticeon`).
 \newif\if@draftmode\@draftmodefalse
+\newif\if@noticeon\@noticeonfalse
 \DeclareOption {draft}
   {%
     \@draftmodetrue%
+    \@noticeontrue%
   }
 
 %%
-%% * **`noticeoff`** Отдельная опция, позволяющая отключить
-%% печать рабочих заметок в режиме черновика.
-\newif\if@noticeon\@noticeontrue
-\DeclareOption {noticeoff}
+%% * **`noticeon`** Отдельная опция, позволяющая включить
+%% печать рабочих заметок без режима черновика.
+\DeclareOption {noticeon}
   {%
-    \@noticeonfalse%
+    \@noticeontrue%
   }
 
 %%
@@ -2137,7 +2138,7 @@
 \NewDocumentCommand \notice { m }
   {%
     \unskip{}%
-    \if@draftmode\if@noticeon%      
+    \if@noticeon%      
       \marginpar%
         {%
           \begin{sloppypar}%
@@ -2147,7 +2148,7 @@
         }%
       \stepcounter{pltzdt@notice}%
       \xspace%
-    \fi\fi%
+    \fi%
   }
 
 %%
