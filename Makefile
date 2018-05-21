@@ -66,7 +66,7 @@ run: $(TEXFILES)
 	fi
 
 $(NAME).bbl: $(NAME).aux $(NAME).bcf $(BIBFILES) $(FIXBBL)
-	$(BIBTEX) $(NAME)
+	$(if $(BIBFILES),$(BIBTEX) $(NAME))
 	$(if $(FIXBBL),cat $@ | $(FIXBBL) >$@.temp && mv -f $@.temp $@)
 
 $(NAME).pdf: $(NAME).bbl $(NAME).toc
