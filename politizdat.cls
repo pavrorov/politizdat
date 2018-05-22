@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/14`
-\ProvidesClass{politizdat}[2018/05/14 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/22`
+\ProvidesClass{politizdat}[2018/05/22 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -1970,11 +1970,36 @@
 %%        съезде ВКПб}
 %%    \end{quotation}
 %%
-\let\sourceatrightcmd\sourceatright
-\renewcommand{\sourceatright}[1]{%
-  \sourceatrightcmd[2em]{\raisebox{-.4em}{\small #1}}%
-  \bigskip%
-}
+%%  **`\sourceatright*`**`{` *текст* `}` Аналогична предыдущей, но
+%%  всегда выводит текст «внахлёст» с предыдущим. Имеет смысл
+%%  использовать тогда, когда внутри текста подписи вручную
+%%  проставляются разрывы строки.
+\newlength{\@sourceatrightwidth}%
+\newlength{\@sourceatrightspace}%
+\RenewDocumentCommand \sourceatright { s m }
+  {%
+    \IfBooleanTF{#1}
+      {%
+        \vspace*{-0.4\baselineskip}%
+      }
+      {%
+        \settowidth{\@sourceatrightwidth}{\small #2}%
+        \addtolength{\@sourceatrightwidth}{6.5em}%
+        \setlength{\@sourceatrightspace}{\textwidth}%
+        \addtolength{\@sourceatrightspace}{-1\predisplaysize}%
+        \addtolength{\@sourceatrightspace}{-4.0em}%
+        \ifdim \@sourceatrightspace > \@sourceatrightwidth%
+          \vspace*{-0.4\baselineskip}%
+        \else%
+          \vspace*{0.5\baselineskip}%
+        \fi%
+      }%
+    \begin{adjustwidth}{2.5em}{0pt}%
+      \flushright%
+      \small #2
+    \end{adjustwidth}%
+    \bigskip%
+  }
 
 %%
 %% **`\signatright`**`{` *текст* `}` Набор простых подписей
