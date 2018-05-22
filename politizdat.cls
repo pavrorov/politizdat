@@ -2235,16 +2235,19 @@
 %% `:end`, и, при необходимости, могут использоваться независимо друг
 %% от друга.
 %%
+%% **`\startlabel*`**`{` *метка* `}  Аналогична команде `\startlabel`,
+%% но «съедает» впередистоящий пробел.
+%%
 %% ** `\rangeref`**`{` *метка* `}  Печатает `N` или `N--M`
 %% автоматически, в зависимости от того, на одно или на разные
 %% страницы указывают метки начала и конца фрагмента.
 
-\NewDocumentCommand \startlabel { m }
+\NewDocumentCommand \startlabel { s m }
   {%
-    \unskip{}%
+    \IfBooleanTF{#1}{\unskip{}}{}%
     \begingroup%
-    \def\pltzdt@labelbase{#1}%
-    \label{#1:start}%
+    \def\pltzdt@labelbase{#2}%
+    \label{#2:start}%
   }
 \NewDocumentCommand \endlabel {}
   {%
