@@ -1624,12 +1624,12 @@
 }  
 
 \let\pltzdt@footnote\footnote
-\RenewDocumentCommand \footnote { s m }
+\RenewDocumentCommand \footnote { o m }
   {%
     \unskip{}%
-    \IfBooleanTF{#1}%
-      {\pltzdt@footnote[#1]{#2}}%
+    \IfEmpty{#1}%
       {\pltzdt@footnote{#2}}%
+      {\pltzdt@footnote[#1]{#2}}%
   }%
 
 % Если включен режим постраничной нумерации сносок, то загружается
