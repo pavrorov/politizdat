@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/14`
-\ProvidesClass{politizdat}[2018/05/14 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/05/22`
+\ProvidesClass{politizdat}[2018/05/22 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -348,20 +348,21 @@
 %%
 %% * **`draft`** Режим черновика. В режиме черновика на полях издания
 %% ставятся пометки об ошибках набора, а также выводятся *рабочие
-%% заметки* (см. `\notice`, см. также `noticeoff`).
+%% заметки* (см. `\notice`, см. также `noticeon`).
 \newif\if@draftmode\@draftmodefalse
+\newif\if@noticeon\@noticeonfalse
 \DeclareOption {draft}
   {%
     \@draftmodetrue%
+    \@noticeontrue%
   }
 
 %%
-%% * **`noticeoff`** Отдельная опция, позволяющая отключить
-%% печать рабочих заметок в режиме черновика.
-\newif\if@noticeon\@noticeontrue
-\DeclareOption {noticeoff}
+%% * **`noticeon`** Отдельная опция, позволяющая включить
+%% печать рабочих заметок без режима черновика.
+\DeclareOption {noticeon}
   {%
-    \@noticeonfalse%
+    \@noticeontrue%
   }
 
 %%
@@ -1709,7 +1710,7 @@
 %%
 \NewDocumentCommand \insertmark { m }
   {%
-    \unskip{}~--- \textit{#1}\xspace%
+    \unskip{}~--- \textit{#1}%
   }
 
 \NewDocumentCommand \definemark { m m }
@@ -1758,10 +1759,10 @@
 %% переопределяет) команду *команда* для вывода подписи-пометки.
 %% Например, конструкция
 %%
-%%     \definemark{authormark}{В.",И.}
+%%     \definemark{authormark}{В.\,И.}
 %%
 %% переопределяет команду `\authormark` так, что теперь вместо
-%% <<--- *Авт.*>> будет подставляться <<--- *В.И.*>>.
+%% <<--- *Авт.*>> будет подставляться <<--- *В. И.*>>.
 %% Последовательность <<`",`>>, данная выше в качестве разделителя
 %% инициалов при определении команды не случайна: она служит для
 %% набора краткого неразрывного пробела, специально предназначенного
@@ -1969,11 +1970,23 @@
 %%        съезде ВКПб}
 %%    \end{quotation}
 %%
+%% **`\sourceatright`**`{` *начало* `}{` *продолжение* `}`
+%% Аналогична предыдущей, но вслед за началом подписи печатает
+%% её продолжение, которое может быть многострочным.
 \let\sourceatrightcmd\sourceatright
-\renewcommand{\sourceatright}[1]{%
-  \sourceatrightcmd[2em]{\raisebox{-.4em}{\small #1}}%
-  \bigskip%
-}
+\RenewDocumentCommand \sourceatright { m g }
+  {%
+    \sourceatrightcmd[2.5em]{\raisebox{-.4em}{\small #1}}%
+    \IfEmpty {#2}
+      {}
+      {%
+        \begin{adjustwidth}{2.5em}{0pt}%
+          \flushright%
+          \small #2
+        \end{adjustwidth}%
+      }%
+      \bigskip%
+  }
 
 %%
 %% **`\signatright`**`{` *текст* `}` Набор простых подписей
@@ -2137,7 +2150,7 @@
 \NewDocumentCommand \notice { m }
   {%
     \unskip{}%
-    \if@draftmode\if@noticeon%      
+    \if@noticeon%
       \marginpar%
         {%
           \begin{sloppypar}%
@@ -2147,7 +2160,7 @@
         }%
       \stepcounter{pltzdt@notice}%
       \xspace%
-    \fi\fi%
+    \fi%
   }
 
 %%
@@ -2209,16 +2222,19 @@
 %% `:end`, и, при необходимости, могут использоваться независимо друг
 %% от друга.
 %%
+%% **`\startlabel*`**`{` *метка* `}  Аналогична команде `\startlabel`,
+%% но «съедает» впередистоящий пробел.
+%%
 %% ** `\rangeref`**`{` *метка* `}  Печатает `N` или `N--M`
 %% автоматически, в зависимости от того, на одно или на разные
 %% страницы указывают метки начала и конца фрагмента.
 
-\NewDocumentCommand \startlabel { m }
+\NewDocumentCommand \startlabel { s m }
   {%
-    \unskip{}%
+    \IfBooleanTF{#1}{\unskip{}}{}%
     \begingroup%
-    \def\pltzdt@labelbase{#1}%
-    \label{#1:start}%
+    \def\pltzdt@labelbase{#2}%
+    \label{#2:start}%
   }
 \NewDocumentCommand \endlabel {}
   {%
