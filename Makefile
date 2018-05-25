@@ -53,7 +53,7 @@ clean:
 	for i in `seq 1 $(MAXRERUN)`; do rm -fv $(NAME).$$i.aux; done
 	$(MAKE) -C scripts clean
 
-$(NAME).aux $(NAME).bcf $(NAME).toc: $(TEXFILES)
+$(NAME).aux $(if $(BIBFILES),$(NAME).bcf) $(NAME).toc: $(TEXFILES)
 	$(LATEX) $(NAME)
 
 run: $(TEXFILES)
@@ -65,11 +65,11 @@ run: $(TEXFILES)
 		exit 1; \
 	fi
 
-$(NAME).bbl: $(NAME).aux $(NAME).bcf $(BIBFILES) $(FIXBBL)
+$(NAME).bbl: $(NAME).aux $(if $(BIBFILES),$(NAME).bcf $(BIBFILES) $(FIXBBL))
 	$(if $(BIBFILES),$(BIBTEX) $(NAME))
 	$(if $(FIXBBL),cat $@ | $(FIXBBL) >$@.temp && mv -f $@.temp $@)
 
-$(NAME).pdf: $(NAME).bbl $(NAME).toc
+$(NAME).pdf: $(if $(BIBFILES),$(NAME).bbl) $(NAME).toc
 	$(LATEX) $(NAME)
 	@if ! grep -q 'There were undefined references' $(NAME).log; then \
 		run=1; while [ $$run -lt $(MAXRERUN) ] && grep -q 'Page breaks have changed\.' $(NAME).log; do \
