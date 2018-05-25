@@ -1970,35 +1970,22 @@
 %%        съезде ВКПб}
 %%    \end{quotation}
 %%
-%%  **`\sourceatright*`**`{` *текст* `}` Аналогична предыдущей, но
-%%  всегда выводит текст «внахлёст» с предыдущим. Имеет смысл
-%%  использовать тогда, когда внутри текста подписи вручную
-%%  проставляются разрывы строки.
-\newlength{\@sourceatrightwidth}%
-\newlength{\@sourceatrightspace}%
-\RenewDocumentCommand \sourceatright { s m }
+%% **`\sourceatright`**`{` *начало* `}{` *продолжение* `}`
+%% Аналогична предыдущей, но вслед за началом подписи печатает
+%% её продолжение, которое может быть многострочным.
+\let\sourceatrightcmd\sourceatright
+\RenewDocumentCommand \sourceatright { m g }
   {%
-    \IfBooleanTF{#1}
+    \sourceatrightcmd[2.5em]{\raisebox{-.4em}{\small #1}}%
+    \IfEmpty {#2}
+      {}
       {%
-        \vspace*{-0.4\baselineskip}%
-      }
-      {%
-        \settowidth{\@sourceatrightwidth}{\small #2}%
-        \addtolength{\@sourceatrightwidth}{6.5em}%
-        \setlength{\@sourceatrightspace}{\textwidth}%
-        \addtolength{\@sourceatrightspace}{-1\predisplaysize}%
-        \addtolength{\@sourceatrightspace}{-4.0em}%
-        \ifdim \@sourceatrightspace > \@sourceatrightwidth%
-          \vspace*{-0.4\baselineskip}%
-        \else%
-          \vspace*{0.5\baselineskip}%
-        \fi%
+        \begin{adjustwidth}{2.5em}{0pt}%
+          \flushright%
+          \small #2
+        \end{adjustwidth}%
       }%
-    \begin{adjustwidth}{2.5em}{0pt}%
-      \flushright%
-      \small #2
-    \end{adjustwidth}%
-    \bigskip%
+      \bigskip%
   }
 
 %%
