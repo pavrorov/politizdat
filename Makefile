@@ -171,6 +171,11 @@ W2L_CONF = w2l.conf.xml
 
 ## ---
 
+%.tex: %.md
+	pandoc -S -f markdown -t latex -o $@ $<
+
+## ---
+
 define newline
 
 
