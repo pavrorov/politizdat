@@ -1675,6 +1675,7 @@
 
 \def\labelitemi{--}
 \renewcommand{\labelenumi}{\arabic{enumi})}
+\renewcommand{\labelenumii}{\asbuk{enumii})}
 
 %%
 %% Оформление титульной страницы
