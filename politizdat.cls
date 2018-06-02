@@ -1436,6 +1436,10 @@
         \fi%
       }%
     \renewcommand{\chapter}{\mainchapter}%
+    \if@journal%  
+      \counterwithout{figure}{chapter}%
+      \counterwithout{table}{chapter}%
+    \fi%
   }
   
 \let\pltzdt@memback\backmatter
