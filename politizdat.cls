@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/05/22`
-\ProvidesClass{politizdat}[2018/05/22 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/06/03`
+\ProvidesClass{politizdat}[2018/06/03 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -1807,11 +1807,14 @@
 \NewDocumentCommand \hia {} {\pltzdt@hia}
 
 %%
-%% **`\myem`** и **`\ourem`** Выводят текст <<Курсив мой.>> и <<Курсив
-%% наш.>> соответственно. Посредством дополнительного аргумента в
-%% фигурных скобках данным командам может быть передан текст для
-%% вставки в среднюю часть предложения. Так, команда `\myem{везде}`
-%% даст в результате <<Курсив везде мой.>>.
+%% **`\Myem`** и **`\Ourem`**  Печатают текст <<Курсив мой.>> и
+%% <<Курсив наш.>> соответственно. Посредством дополнительного
+%% аргумента в фигурных скобках данным командам может быть передан
+%% текст для вставки в среднюю часть предложения. Так, команда
+%% `\Myem{везде}` даст в результате <<Курсив везде мой.>>.
+%%
+%% **`\myem`** и **`\ourem`**  Аналогичны предыдущим, но печатают
+%% <<курсив мой.>> и <<курсив наш.>> соответственно.
 \NewDocumentCommand \definecomment { m m g }
   {%
     % Определение команды для вывода комментария
@@ -1820,14 +1823,14 @@
         \expandafter \DeclareDocumentCommand%
         \csname#1\endcsname { g }%
           {%
-            \unskip{} #2\IfEmpty{##1}{}{ ##1}\xperiod%
+            \unskip{}#2\IfEmpty{##1}{}{ ##1}\xperiod%
           }%
       }
       {%
         \expandafter \DeclareDocumentCommand%
         \csname#1\endcsname { g }%
           {%
-            \unskip{} #2\IfEmpty{##1}{}{ ##1} #3\xperiod%
+            \unskip{}#2\IfEmpty{##1}{}{ ##1} #3\xperiod%
           }%
       }%
     % Определение команды для вывода комментария с обязательным
@@ -1837,34 +1840,42 @@
         \expandafter \DeclareDocumentCommand%
           \csname#1x\endcsname { m }%
           {%
-            \unskip{} #2, ##1\xperiod%
+            \unskip{}#2, ##1\xperiod%
           }%
       }
       {%
         \expandafter \DeclareDocumentCommand%
           \csname#1x\endcsname { m }%
           {%
-            \unskip{} #2, ##1, #3\xperiod%
+            \unskip{}#2, ##1, #3\xperiod%
           }%
       }%
   }%
-\global\def\pltzdt@myempre{Emphasized}%
+\global\def\pltzdt@Myempre{Emphasized}%
+\global\def\pltzdt@myempre{emphasized}%
 \global\def\pltzdt@myempost{by me}%
-\global\def\pltzdt@ourempre{Emphasized}%
+\global\def\pltzdt@Ourempre{Emphasized}%
+\global\def\pltzdt@ourempre{emphasized}%
 \global\def\pltzdt@ourempost{by us}%
 \AtBeginDocument{%
   \ifluatex%
-    \global\def\pltzdt@myempre{Курсив}%
+    \global\def\pltzdt@Myempre{Курсив}%
+    \global\def\pltzdt@myempre{курсив}%
     \global\def\pltzdt@myempost{мой}%
-    \global\def\pltzdt@ourempre{Курсив}%
+    \global\def\pltzdt@Ourempre{Курсив}%
+    \global\def\pltzdt@ourempre{курсив}%
     \global\def\pltzdt@ourempost{наш}%
   \else%
-    \global\def\pltzdt@myempre{\CYRK\cyru\cyrr\cyrs\cyri\cyrv}%
+    \global\def\pltzdt@Myempre{\CYRK\cyru\cyrr\cyrs\cyri\cyrv}%
+    \global\def\pltzdt@myempre{\cyrk\cyru\cyrr\cyrs\cyri\cyrv}%
     \global\def\pltzdt@myempost{\cyrm\cyro\cyri}%
-    \global\def\pltzdt@ourempre{\CYRK\cyru\cyrr\cyrs\cyri\cyrv}%
+    \global\def\pltzdt@Ourempre{\CYRK\cyru\cyrr\cyrs\cyri\cyrv}%
+    \global\def\pltzdt@ourempre{\cyrk\cyru\cyrr\cyrs\cyri\cyrv}%
     \global\def\pltzdt@ourempost{\cyrn\cyra\cyrsh}%
   \fi%
 }
+\definecomment{Myem}{\pltzdt@Myempre}{\pltzdt@myempost}
+\definecomment{Ourem}{\pltzdt@Ourempre}{\pltzdt@ourempost}
 \definecomment{myem}{\pltzdt@myempre}{\pltzdt@myempost}
 \definecomment{ourem}{\pltzdt@ourempre}{\pltzdt@ourempost}
 
