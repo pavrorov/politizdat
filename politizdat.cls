@@ -1539,8 +1539,10 @@
 \newcommand{\nextsection}{%
   \setsecnumdepth{chapter}%
   \stepcounter{nextsectionnum}%
-  {\let\sectionmark\nosectionmark%
-  \section[]{\protect\centering\Roman{nextsectionnum}}}%
+  \let\@oldsectionmark\sectionmark%
+  \let\sectionmark\nosectionmark%
+  \section[]{\protect\centering\Roman{nextsectionnum}}%
+  \let\sectionmark\@oldsectionmark%
 }
 
 \let\pltzdt@sectionmark\sectionmark%
