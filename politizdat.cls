@@ -1733,6 +1733,7 @@
 
 \NewDocumentCommand \definemark { m m }
   {%
+    \global\expandafter\def\csname#1@last\endcsname{#2}%
     \expandafter \DeclareDocumentCommand%
       \csname#1\endcsname {}%
       {%
@@ -1766,6 +1767,28 @@
 }
 \definemark {editormark} {\pltzdt@emk{}.}
 \NewDocumentCommand \emk {} {\editormark}
+
+\AtBeginDocument{%
+  \global\let\authormark@orig\authormark@last%
+  \global\let\editormark@orig\editormark@last%
+}
+
+%%
+%% **`\restoremark`**`{` *команда* `}`  Восстанавливает текст
+%% указанной пометки таким, каким он был до `\begin{document}`.
+\NewDocumentCommand \restoremark { m }
+  {%
+    \expandafter\definemark{#1}{\csname#1@orig\endcsname}%
+  }
+
+%%
+%% **`\restoremarks`**  Восстанавливает исходный текст пометок
+%% `\authormark` и `\editormark`.
+\NewDocumentCommand \restoremarks {}
+  {%
+    \restoremark{authormark}%
+    \restoremark{editormark}%
+  }
 
 %%
 %% Иногда вместо пометок *Авт.* или *Ред.* используют инициалы автора
