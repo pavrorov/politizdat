@@ -1689,16 +1689,27 @@
 %%
 %% Для оформления титульной страницы с равными полями слева и
 %% справа можно использовать окружение **`centertitlingpage`**.
+%%
+%% Для центровки обычных (не титульных) страниц есть окружение
+%% **`centerpage`**.
+
+\newenvironment{centerpage}{%
+  \newlength{\margindiff}%
+  \addtolength{\margindiff}{\leftmargin}%
+  \addtolength{\margindiff}{-\rightmargin}%
+  \divide\margindiff by 2%
+  \begin{adjustwidth}{\margindiff}{-\margindiff}%
+    \def\@nop{}%
+    \let\clearpage\@nop%
+}{%
+  \end{adjustwidth}%
+}
 
 \newenvironment{centertitlingpage}{%
   \begin{titlingpage*}%
-    \newlength{\margindiff}%
-    \addtolength{\margindiff}{\leftmargin}%
-    \addtolength{\margindiff}{-\rightmargin}%
-    \divide\margindiff by 2%
-    \begin{adjustwidth}{\margindiff}{-\margindiff}%
+    \begin{centerpage}%
 }{%
-  \end{adjustwidth}%
+    \end{centerpage}%
   \end{titlingpage*}%
 }
 
