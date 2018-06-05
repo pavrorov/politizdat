@@ -1693,9 +1693,9 @@
 %% Для центровки обычных (не титульных) страниц есть окружение
 %% **`centerpage`**.
 
+\newlength{\margindiff}%
 \newenvironment{centerpage}{%
-  \newlength{\margindiff}%
-  \addtolength{\margindiff}{\leftmargin}%
+  \setlength{\margindiff}{\leftmargin}%
   \addtolength{\margindiff}{-\rightmargin}%
   \divide\margindiff by 2%
   \begin{adjustwidth}{\margindiff}{-\margindiff}%
