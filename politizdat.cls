@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/06/03`
-\ProvidesClass{politizdat}[2018/06/03 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/06/06`
+\ProvidesClass{politizdat}[2018/06/06 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -1693,24 +1693,34 @@
 %% Для центровки обычных (не титульных) страниц есть окружение
 %% **`centerpage`**.
 
+\def\@nop{}%
 \newlength{\margindiff}%
 \newenvironment{centerpage}{%
-  \setlength{\margindiff}{\leftmargin}%
-  \addtolength{\margindiff}{-\rightmargin}%
-  \divide\margindiff by 2%
-  \begin{adjustwidth}{\margindiff}{-\margindiff}%
-    \def\@nop{}%
+%  \setlength{\margindiff}{\leftmargin}%
+%  \addtolength{\margindiff}{-\rightmargin}%
+%  \divide\margindiff by 2%
+  \calccentering{\margindiff}%
+  \begin{adjustwidth*}{\margindiff}{-\margindiff}%
     \let\clearpage\@nop%
+    \let\cleardoublepage\@nop%
 }{%
-  \end{adjustwidth}%
+  \end{adjustwidth*}%
+  \clearpage%
 }
 
 \newenvironment{centertitlingpage}{%
+  \let\old@clearpage\clearpage%
+  \let\old@cleardoublepage\cleardoublepage%
   \begin{titlingpage*}%
     \begin{centerpage}%
 }{%
     \end{centerpage}%
+  \let\clearpage\@nop%
+  \let\cleardoublepage\@nop%
   \end{titlingpage*}%
+  \let\clearpage\old@clearpage%
+  \let\cleardoublepage\old@cleardoublepage%
+  \clearpage%
 }
 
 %%
