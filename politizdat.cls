@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/06/12`
-\ProvidesClass{politizdat}[2018/06/12 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/07/15`
+\ProvidesClass{politizdat}[2018/07/15 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -2876,6 +2876,13 @@
 \widowpenalty=10000%
 \interfootnotelinepenalty=10000%
 \brokenpenalty=0%
-  
+
+\AtEndDocument{
+  \checkoddpage%
+  \ifoddpage%
+    \cleardoublepage%
+  \fi%
+}
+
 % Конец.
 \endinput
