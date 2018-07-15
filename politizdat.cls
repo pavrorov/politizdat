@@ -2023,15 +2023,25 @@
 %% Аналогична предыдущей, но вслед за началом подписи печатает
 %% её продолжение, которое может быть многострочным.
 \let\sourceatrightcmd\sourceatright
-\RenewDocumentCommand \sourceatright { m g }
+\RenewDocumentCommand \sourceatright { o m g }
   {%
-    \sourceatrightcmd[2.5em]{\raisebox{-.4em}{\small #1}}%
-    \IfEmpty {#2}
+    \IfEmpty {#2}{\vspace*{0.25\baselineskip}}{%
+    \IfEmpty {#1}{%
+      \sourceatrightcmd[2.5em]{\raisebox{-.4em}{\small #2}}%
+    }{%
+      \sourceatrightcmd[#1]{\raisebox{-.4em}{\small #2}}%
+    }%
+    }%
+    \IfEmpty {#3}
       {}
       {%
-        \begin{adjustwidth}{2.5em}{0pt}%
+        \IfEmpty {#1}{%
+          \begin{adjustwidth}{2.5em}{0pt}%
+        }{%
+          \begin{adjustwidth}{#1}{0pt}%
+        }%
           \flushright%
-          \small #2
+          \small #3
         \end{adjustwidth}%
       }%
       \bigskip%
