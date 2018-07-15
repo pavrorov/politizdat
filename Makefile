@@ -167,7 +167,13 @@ W2L_CONF = w2l.conf.xml
 
 %.tex: %.odt
 	w2l -latex -config=$(W2L_CONF) $< $@
+	sed -i -f scripts/replace.sed $@
 	sed -i -f scripts/w2l.post.sed $@
+
+replace: $(PARTTEXFILES)
+	for f in $(PARTTEXFILES); do \
+		sed -i -f scripts/replace.sed $$f; \
+	done
 
 ## ---
 
