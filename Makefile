@@ -165,7 +165,7 @@ W2L_CONF = w2l.conf.xml
 %.odt: %.docx
 	lowriter --headless --convert-to odt $<
 
-%.tex: %.odt
+%.tex: %.odt $(W2L_CONF)
 	w2l -latex -config=$(W2L_CONF) $< $@
 	sed -i -f scripts/replace.sed $@
 	sed -i -f scripts/w2l.post.sed $@
