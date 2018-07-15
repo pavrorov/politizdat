@@ -1856,14 +1856,14 @@
         \expandafter \DeclareDocumentCommand%
         \csname#1\endcsname { g }%
           {%
-            \unskip{}#2\IfEmpty{##1}{}{ ##1}\xperiod%
+            #2\IfEmpty{##1}{}{ ##1}\xperiod%
           }%
       }
       {%
         \expandafter \DeclareDocumentCommand%
         \csname#1\endcsname { g }%
           {%
-            \unskip{}#2\IfEmpty{##1}{}{ ##1} #3\xperiod%
+            #2\IfEmpty{##1}{}{ ##1} #3\xperiod%
           }%
       }%
     % Определение команды для вывода комментария с обязательным
@@ -1873,14 +1873,14 @@
         \expandafter \DeclareDocumentCommand%
           \csname#1x\endcsname { m }%
           {%
-            \unskip{}#2, ##1\xperiod%
+            #2, ##1\xperiod%
           }%
       }
       {%
         \expandafter \DeclareDocumentCommand%
           \csname#1x\endcsname { m }%
           {%
-            \unskip{}#2, ##1, #3\xperiod%
+            #2, ##1, #3\xperiod%
           }%
       }%
   }%
