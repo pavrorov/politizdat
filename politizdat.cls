@@ -2690,6 +2690,10 @@
     {\printfield[citetitle]{labeltitle}}
     {\printfield[title]{labeltitle}}%
   \newunit%
+  \usebibmacro{publicationdetails}%
+}
+
+\newbibmacro {publicationdetails} {%
   \iffieldundef {shortseries}
     {%
       \iffieldundef {booktitle}
@@ -2803,20 +2807,22 @@
 %% вышеуказанных способов. Команда `\printcite` удобна для набора
 %% примечаний со ссылками на литературу, подобных
 %%
-%%     \enote{См. также: \printcite{Marx:Kapital:I}[55]}
+%%     \enote{См. также: \printcite[55]{Marx:Kapital:I}.}
 
 %%
 %% Ещё более краткий вариант оформления ссылки, предназначенный для
 %% упоминания названий работ в тексте, предоставляет команда
-%% `\citetitle{ключ}`. Она вставляет в текст название работы, взятое
-%% в кавычки, а следом --- номер-ссылку на информацию о
-%% соответствующей публикации в списке источников литературы.
+%% **`\printcitetitle`**`{` *ключ* `}`. Она вставляет в текст название
+%% работы, взятое в кавычки, а следом --- номер-ссылку на информацию
+%% о соответствующей публикации в списке источников литературы (если
+%% таковой список будет включён в издание).
+%%
 %% Пример:
 %%
 %%     Впервые эта мысль была высказана Лениным в статье
-%%     \citetitle{Ленин:С чего начать?}.
+%%     \printcitetitle{Ленин:С чего начать?}.
 %%
-\DeclareCiteCommand{\citetitle}
+\DeclareCiteCommand{\printcitetitle}
   {%
     \boolfalse{citetracker}%
     \boolfalse{pagetracker}%
@@ -2838,6 +2844,18 @@
   {%
     \usebibmacro{postnote}%
   }
+
+%%
+%% Дополнительной по отношению к команде `\printcitetitle` выступает
+%% команда **`\printcitedetails`**`{` *ключ* `}`, которая печатает
+%% выходные данные издания *без имени автора и названия работы*.
+%%
+\DeclareCiteCommand{\printcitedetails}
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{publicationdetails}}
+  {\multicitedelim}
+  {\usebibmacro{cite:postnote}}
 
 \renewcommand*{\newblockpunct}{\addperiod\addspace}
 \renewcommand*{\newunitpunct}{\addcomma\addspace}
