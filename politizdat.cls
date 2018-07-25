@@ -2764,7 +2764,7 @@
 \let\printbibcite\cite
 
 % Определение команды для набора текста библиографической ссылки.
-\NewDocumentCommand \printcite { o m o g }
+\NewDocumentCommand \pltzdt@printcite { o m o g }
   {%
     \IfEmpty{#1}
       {%
@@ -2788,16 +2788,21 @@
       }%
   }
 
+\NewDocumentCommand \printcite { o m o }
+  {%
+    \pltzdt@printcite[#1]{#2}[#3]%
+  }%
+
 % Переопределение команды для оформления текста библиографической
 % ссылки. Согласно настройкам пакета ссылка оформляется виде сноски
 % или непосредственно в основном тексте в скобках.
 \DeclareDocumentCommand \cite { o m o g } {%
   \if@inlinebib%
-    \space\mkbibparens{\printcite[#1]{#2}[#3]{#4}\unskip{}}%
+    \space\mkbibparens{\pltzdt@printcite[#1]{#2}[#3]{#4}\unskip{}}%
   \else%
     \iftoggle{blx@footnote}% FIXME: Зависимость от флага biblatex
-      {\space\mkbibparens{\printcite[#1]{#2}[#3]{#4}\unskip{}}}%
-      {\mkbibfootnote{\printcite[#1]{#2}[#3]{#4}}}%
+      {\space\mkbibparens{\pltzdt@printcite[#1]{#2}[#3]{#4}\unskip{}}}%
+      {\mkbibfootnote{\pltzdt@printcite[#1]{#2}[#3]{#4}}}%
   \fi%
 }
 
