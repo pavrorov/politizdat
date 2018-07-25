@@ -1163,6 +1163,7 @@
     \fi%
     \if@journal\else\printprechapterauthor\fi%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
+    \setcounter{footnote}{0}%
   }%
   \if@skipchapnums%
     \def\printchaptername{}%
