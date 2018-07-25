@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/07/15`
-\ProvidesClass{politizdat}[2018/07/15 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/07/25`
+\ProvidesClass{politizdat}[2018/07/25 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -2891,7 +2891,7 @@
 \setsecnumdepth{subsection}%
 \clubpenalty=10000%
 \widowpenalty=10000%
-\interfootnotelinepenalty=10000%
+\interfootnotelinepenalty=9000%
 \brokenpenalty=0%
 
 \AtEndDocument{
