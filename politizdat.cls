@@ -534,7 +534,9 @@
 \RequirePackage{ifthen}
 \RequirePackage{hyphenat}
 \RequirePackage{csquotes}
-  
+
+\xspaceaddexceptions{]}
+
 % Вспомогательная команда-условный оператор. Условие выполняется,
 % если аргумент задан пустым, либо вообще не задан.
 \newcommand{\IfEmpty}[3]{%
@@ -1734,7 +1736,7 @@
 %%
 \NewDocumentCommand \insertmark { m }
   {%
-    \unskip{}~--- \textit{#1}%
+    \unskip{}~--- \textit{#1}\xspace%
   }
 
 \NewDocumentCommand \definemark { m m }
@@ -2307,7 +2309,7 @@
 \NewDocumentCommand \endlabel {}
   {%
     \unskip{}\label{\pltzdt@labelbase:end}%
-    \endgroup%
+    \endgroup\xspace%
   }
 
 \NewDocumentCommand \rangeref { m }
