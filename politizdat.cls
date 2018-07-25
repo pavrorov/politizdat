@@ -255,8 +255,10 @@
 %%
 %% * **`openany`** Позволяет начинать новую главу как на нечётных (по
 %% умолчанию), так и на *чётных*, т.е. левых страницах издания.
+\newif\if@openany\@openanyfalse
 \DeclareOption {openany} {%
   \PassOptionsToClass {openany} {memoir}%
+  \@openanytrue%
 }
 
 %%
@@ -1393,7 +1395,7 @@
 \renewcommand{\aftertoctitle}{%
   \afterchaptertitle%
 }
-  
+
 \let\pltzdt@memfront\frontmatter
 \newif\if@frontnormal\@frontnormaltrue
 \RenewDocumentCommand \frontmatter { s }
@@ -1405,7 +1407,7 @@
         \pltzdt@memfront%
         \pagenumbering{Roman}%
         \@frontnormalfalse%
-      }% 
+      }%
     \renewcommand{\chapter}{\frontchapter}%
   }
 
@@ -1413,6 +1415,10 @@
 \RenewDocumentCommand \mainmatter { s }  
   {%
     \@divisionsetfalse%
+    \if@openany%
+      \let\pltzdt@cleardoublepage\cleardoublepage%
+      \let\cleardoublepage\relax%
+    \fi%
     \IfBooleanTF{#1}%
       {\pltzdt@memmain*}%
       {%
@@ -1422,6 +1428,9 @@
           \pltzdt@memmain%
         \fi%
       }%
+    \if@openany
+      \let\cleardoublepage\pltzdt@cleardoublepage%
+    \fi%
     \renewcommand{\chapter}{\mainchapter}%
     \if@journal%  
       \counterwithout{figure}{chapter}%
