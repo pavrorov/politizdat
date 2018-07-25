@@ -1,5 +1,5 @@
 
-SCRIPTS = typeset.sed postfix.sed shortwords.sed
+SCRIPTS = typeset.sed postfix.sed shortwords.sed lastfix.sed
 TYPECHECK = typecheck.sh
 
 SCRIPTDIR = $(dir $(lastword $(MAKEFILE_LIST)))
