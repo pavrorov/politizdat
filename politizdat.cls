@@ -1322,9 +1322,9 @@
       {\pltzdt@chaptercommon[#2][#3]{#4}}%
     \IfBooleanF{#1}
       {%
-        \IfEmpty{#3}
-          {\def\@chaptitle{#4}}
-          {\def\@chaptitle{#3}}%
+        \IfEmpty{#2}
+          {\def\@chaptitle{#4}}%
+          {\def\@chaptitle{#2}}%
         \if@sectoc%
         \addtocontents{toc}
           {%
