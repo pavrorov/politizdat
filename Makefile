@@ -10,7 +10,7 @@ TYPE =
 ## Имена составных частей издания без префикса $(BASENAME) и
 ## суффикса .tex (таки образом имена файлов должны соответствовать
 ## шаблону $(BASENAME).имя.tex):
-PARTS = title fw ch1 ch2
+PARTS = title annot fw ch1 ch2
 
 ## Список файлов библиографии из директории bib/ (без суффикса):
 BIB = marx-engels lenin stalin ikki misc philosophy plehanov \
