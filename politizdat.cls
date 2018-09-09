@@ -1322,6 +1322,8 @@
     \let\addcontentsline\wasaddcontentsline%
   }
 
+\aliaspagestyle{part}{empty}
+  
 \let\pltzdt@memchapter\chapter
 \NewDocumentCommand \pltzdt@chaptercommon { s o o m }
   {%
