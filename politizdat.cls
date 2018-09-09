@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/07/29`
-\ProvidesClass{politizdat}[2018/07/29 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/09/09`
+\ProvidesClass{politizdat}[2018/09/09 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -96,9 +96,17 @@
 
 %%
 %% * **`9pt`** ... **`12pt`**, **`14pt`** Набор опций для выбора
-%% размера базового шрифта.
+%% размера базового шрифта. Доступен так же особый размер в `10.5pt`.
 \DeclareOption {9pt} {\PassOptionsToClass {9pt} {memoir}}
 \DeclareOption {10pt} {\PassOptionsToClass {10pt} {memoir}}
+
+\DeclareOption {10.5pt}
+  {%
+    \newcommand*{\anyptfilebase}{pltzdt}%
+    \newcommand*{\anyptsize}{10.5}%
+    \PassOptionsToClass {*pt} {memoir}%
+  }
+
 \DeclareOption {11pt} {\PassOptionsToClass {11pt} {memoir}}
 \DeclareOption {12pt} {\PassOptionsToClass {12pt} {memoir}}
 \DeclareOption {14pt} {\PassOptionsToClass {14pt} {memoir}}
