@@ -418,6 +418,16 @@
 \DeclareOption {plainchapters} {\@skipchapnumstrue}
 
 %%
+%% * **`samepagechapters`**  Начинать новую главу не начиная
+%% новую страницу.
+\newif\if@samepagechaps\@samepagechapsfalse%
+\DeclareOption {samepagechapters}
+  {%
+    \ExecuteOptions {openany}%
+    \@samepagechapstrue%
+  }
+
+%%
 %% * **`chapterdrop`**  Использовать обычный отступ перед заголовком
 %% главы (`\beforechapskip`) в главном разделе книги (`\mainmatter`).
 %% В режиме журнала включается автоматически.
@@ -1169,13 +1179,22 @@
 
 \makechapterstyle{politizdat}{%
   \chapterstyle{default}%
+  \if@samepagechaps%
+    \setlength{\beforechapskip}{25pt}%
+    \setlength{\midchapskip}{10pt}%
+    \setlength{\afterchapskip}{15pt}
+  \fi%
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
     \printprechapter%
     \linespread{1.0}%
     \if@mainmatter%
-      \if@chapterspace%
+      \if@samepagechaps%
         \vspace*{\beforechapskip}%
+      \else%
+        \if@chapterspace%
+          \vspace*{\beforechapskip}%
+        \fi%
       \fi%
     \else%
       \vspace*{\beforechapskip}%
@@ -1323,8 +1342,21 @@
   }
 
 \aliaspagestyle{part}{empty}
-  
-\let\pltzdt@memchapter\chapter
+
+\let\pltzdt@@memchapter\chapter
+\NewDocumentCommand \pltzdt@memchapter { s o o m }
+  {%
+    \if@samepagechaps%
+      \IfBooleanTF{#1}
+        {\@m@mschapter[#3]{#4}}
+        {\@m@mchapter[#2][#3]{#4}}%
+    \else%
+      \IfBooleanTF{#1}
+        {\pltzdt@@memchapter*[#3]{#4}}
+        {\pltzdt@@memchapter[#2][#3]{#4}}%
+    \fi%
+  }
+
 \NewDocumentCommand \pltzdt@chaptercommon { s o o m }
   {%
     \IfEmpty{#2}{\def\@chaptoctitle{#4}}{\def\@chaptoctitle{#2}}%
