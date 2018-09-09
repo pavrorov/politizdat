@@ -2966,7 +2966,11 @@
 } %\AfterPackage{biblatex}
 
 % Инициализация
-\sloppybottom%
+\if@headerson%
+  \sloppybottom%
+\else%
+  \raggedbottom%  
+\fi%
 \applylayout%
 \footmarkstyle{\textsuperscript{#1}\space}%
 \indentafterchapter%
