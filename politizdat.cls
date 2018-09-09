@@ -29,8 +29,8 @@
 %% и для электронной публикации (посредством `tex4ht`).
 
 %%
-%% Выходные данные пакета: `politizdat 2018/07/25`
-\ProvidesClass{politizdat}[2018/07/25 Politizdat class]
+%% Выходные данные пакета: `politizdat 2018/07/29`
+\ProvidesClass{politizdat}[2018/07/29 Politizdat class]
 
 %%
 %% Для работы пакета требуется версия LaTeX не ниже LaTeX2e
@@ -224,13 +224,13 @@
 
 %%
 %% * **`paperback`** Клеевое скрепление блока. Размер внутреннего
-%% поля увеличивается (по умолчанию на 7 мм) для того, чтобы
+%% поля увеличивается (по умолчанию на 4 мм) для того, чтобы
 %% скомпенсировать плохую раскрываемость книги при скреплении
 %% клеевом скреплении страниц.
 \newlength{\pltzdt@bindingoffset}
 \setlength{\pltzdt@bindingoffset}{0mm}
 \DeclareOption {paperback} {%
-  \setlength{\pltzdt@bindingoffset}{7mm}%
+  \setlength{\pltzdt@bindingoffset}{4mm}%
 }
 
 %%
@@ -1039,21 +1039,27 @@
 }
 
 %%
-%% **`\chapterauthor`**`{` *Имя автора главы* `}` Определяет
-%% имя автора, которое выводится перед названием следующей главы
-%% и в оглавлении.
-%%
+%% **`\chapterauthor`**`[` *пометка* `]``{` *Имя автора главы* `}`
+%% Определяет имя автора, которое выводится перед названием следующей
+%% главы и в оглавлении. Опциональный аргумент позволяет задать также
+%% авторскую пометку (`\authormark`), которая будет использована
+%% только в данной главе.
 \def\thechapterauthor{}%
 \newif\if@chapterauthorset\@chapterauthorsetfalse%
-\newcommand{\chapterauthor}[1]{%
-  \global\def\thechapterauthor{#1}%
-  \@chapterauthorsettrue%
-}
+\NewDocumentCommand \chapterauthor { o m }
+  {%
+    \global\def\thechapterauthor{#2}%
+    \@chapterauthorsettrue%
+    \IfEmpty{#1}{}{\definemark{authormark}{#1}}%
+  }
 
 %%
 %% **`\nochapterauthor`**` Отменяет действие команды `\chapterauthor`.
+%% Cбрасывает авторскую пометку (`\authormark`, `\amk`) к значению,
+%% бывшему до `\begin{document}` (см. также `\restoremark`).
 \newcommand{\nochapterauthor}{%
-  \@chapterauthorsetfalse
+  \restoremark{authormark}%
+  \@chapterauthorsetfalse%
   \global\def\thechapterauthor{}%
 }
 
@@ -1067,6 +1073,7 @@
 
 \def\@prechapter{}
 \newif\if@prechapterset\@prechaptersetfalse
+\newlength{\@prechapterskip}\setlength{\@prechapterskip}{0pt}
 \NewDocumentCommand \setprechapter { s m }
   {%
     \global\def\@prechapter{#2}%
@@ -1074,24 +1081,29 @@
     \IfBooleanTF{#1}
       {\@disableheadstrue}
       {\@disableheadsfalse}%
+    \setlength{\@prechapterskip}{0pt}%
   }
 \newcommand{\clearprechapter}{%
   \@prechaptersetfalse%
   \@disableheadsfalse%
   \global\def\@prechapter{}%
 }
+\NewDocumentCommand \setprechapterskip { m }
+  {%
+    \setlength{\@prechapterskip}{#1}%
+  }
 \newcommand{\printprechapter}{%
   \if@prechapterset%
     \@prechapter\par%
+    \vspace{\@prechapterskip}%
   \fi%
 }
 \newcommand{\printprechapterauthor}{%
   \if@skipchapnums\if@chapterauthorset%
     {%
-      \if@journal\flushleft\else\centering\fi%
+      \centering%
       \normalfont\Large\textit{\thechapterauthor}%
-      \if@journal\vspace*{-\baselineskip}%
-      \else\vspace*{0.5em}\fi%
+      \vspace{0.5em}%
       \par%
     }%
   \fi\fi%
@@ -1152,7 +1164,6 @@
   \def\thechapter{\Roman{chapter}}%
   \def\chapterheadstart{%
     \printprechapter%
-    \if@journal\printprechapterauthor\fi%
     \linespread{1.0}%
     \if@mainmatter%
       \if@chapterspace%
@@ -1161,9 +1172,11 @@
     \else%
       \vspace*{\beforechapskip}%
     \fi%
-    \if@journal\else\printprechapterauthor\fi%
+    \printprechapterauthor%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
     \setcounter{footnote}{0}%
+    \if@chapterauthorset\else\nochapterauthor\fi%
+    \@chapterauthorsetfalse%
   }%
   \if@skipchapnums%
     \def\printchaptername{}%
@@ -1218,18 +1231,29 @@
     \IfEmpty{#2}{\@divisionsetfalse}{%
       \global\def\thedivision{#2}%
       \@divisionsettrue%
+      \setprechapter{%
+        \vspace*{-1\headdrop}\vspace*{0.5\baselineskip}%
+        \noindent\hrulefill\\
+        \begin{center}
+          \vspace{-1\baselineskip}
+          {\LARGE\MakeTextUppercase{#2}}
+          \vspace{-1\baselineskip}
+        \end{center}
+        \hrulefill\\
+      }%
     }%
     \IfBooleanTF{#1}{}
       {%
         \addtocontents{toc}
           {%
-            \protect\normalfont%
+            {\protect\normalfont%
             \protect\vspace{2.0em}%
             \protect\centering%
             \protect\bfseries%
             \protect\itshape%
             #2%
-            \protect\vspace{0.25em}%
+            \protect\par\nobreak%
+            \protect\vspace{0.25em}}%
           }%
       }
   }
@@ -1375,7 +1399,6 @@
         \addtocontents{toc}{\protect\par\nobreak\protect\vspace{0.5em}}%
         \fi% sectoc
       }%
-      \nochapterauthor%
       \clearchaptertitleaddon%
   }%
 
@@ -1384,7 +1407,6 @@
     \IfBooleanTF{#1}
       {\pltzdt@chaptercommon*[#2][#3]{#4}}
       {\pltzdt@chaptercommon[#2][#3]{#4}}%
-    \nochapterauthor%
     \clearchaptertitleaddon%  
   }%
 
@@ -1785,6 +1807,8 @@
 %%
 %% **`\restoremark`**`{` *команда* `}`  Восстанавливает текст
 %% указанной пометки таким, каким он был до `\begin{document}`.
+%% Для пометки автора (`\amk`) выполняется автоматически в том
+%% случае, если для главы был указан автор (`\chapterauthor`).
 \NewDocumentCommand \restoremark { m }
   {%
     \expandafter\definemark{#1}{\csname#1@orig\endcsname}%
