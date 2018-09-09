@@ -1296,8 +1296,11 @@
   \@tocskipchapauthortrue%
 }
 
+%%
+%% **`\part`**`[` *в оглавление* `]{` *в блок* `}`  Заголовок части
+%% принимает опциональный аргумент с текстом для оглавления.
 \let\pltzdt@part\part%
-\RenewDocumentCommand \part { s m }
+\RenewDocumentCommand \part { s o m }
   {%
     \cleardoublepage%
     \setcounter{secnumdepth}{\value{maxsecnumdepth}}%
@@ -1305,10 +1308,16 @@
     \@divisionsetfalse%
     \let\wasaddcontentsline\addcontentsline%
     \let\addcontentsline\dontaddcontentsline%
-    \IfBooleanTF{#1}{\pltzdt@part*{#2}}{\pltzdt@part{#2}}%
+    \IfBooleanTF{#1}{\pltzdt@part*{#3}}{\pltzdt@part{#3}}%
     \IfBooleanF{#1}
       {%
-        \addtocontents{toc}{\protect\tocpartbreak{#2}}%
+        \IfEmpty{#2}
+          {%
+            \addtocontents{toc}{\protect\tocpartbreak{#3}}%
+          }
+          {%
+            \addtocontents{toc}{\protect\tocpartbreak{#2}}%
+          }%
       }%
     \let\addcontentsline\wasaddcontentsline%
   }
