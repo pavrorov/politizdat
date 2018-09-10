@@ -43,11 +43,14 @@ TEXT = $(addprefix $(BASENAME).,$(PARTS))
 PARTTEXFILES = $(addsuffix .tex,$(TEXT))
 TEXFILES = $(NAME).tex $(PARTTEXFILES)
 
+BOOKSUF = .book
+SIGNATURE = 16
+
 BIBFILES = $(addsuffix .bib,$(addprefix bib/,$(BIB)))
 
 pdf: $(NAME).pdf
 
-clean:
+clean: clean-book
 	rm -fv $(addprefix $(NAME),.aux .toc .out .log .run.xml \
 		   .bcf .bbl .blg .pdf)
 	for i in `seq 1 $(MAXRERUN)`; do rm -fv $(NAME).$$i.aux; done
@@ -119,7 +122,7 @@ approve:
 	$(MAKE) -C scripts approve
 
 .PHONY: clean autocorr restore approve checkbox remake diff clean-diff \
-		project-rename
+		project-rename book booklet clean-book
 
 DIFFRES = 600
 diff: | clean-diff
@@ -195,3 +198,23 @@ project-rename:
 	$(if $(wildcard $(TOPDIR)/.git),git) mv $(BASENAME).tex $(TO).tex
 	sed -i$(foreach p,$(PARTS), -e 's/\\input{$(BASENAME).$(p)}/\\input{$(TO).$(p)}/') $(TO).tex
 	sed -i -e 's/^BASENAME = .*/BASENAME = $(TO)/' $(MAKEFILE)
+
+
+book: $(NAME)$(BOOKSUF).pdf
+
+$(NAME)$(BOOKSUF).pdf: $(NAME)$(BOOKSUF).tex $(NAME).pdf
+	$(LATEX) $(NAME)$(BOOKSUF)
+
+$(NAME)$(BOOKSUF).tex:
+	echo '\documentclass{article}'	>$@
+	echo '\usepackage{pdfpages}'	>>$@
+	echo '\begin{document}'			>>$@
+	echo '\includepdf[pages=-,landscape=true,signature=$(SIGNATURE)]{$(NAME)}' >>$@
+	echo '\end{document}'			>>$@
+
+booklet: $(NAME)$(BOOKSUF).tex
+	sed -i -e 's/signature=[0-9]\+/booklet=true/' $<
+	$(LATEX) $(NAME)$(BOOKSUF)
+
+clean-book:
+	rm -fv $(NAME)$(BOOKSUF).tex $(NAME)$(BOOKSUF).pdf
