@@ -2157,10 +2157,11 @@
 %% **`\markend`** Линия, показывающая конец материала, дополняемая
 %% отступом до конца страницы.
 \newcommand{\markend}{%
-  \begin{center}
-    \rule{6em}{0.5pt}
-  \end{center}
-  \vfill
+  \begin{center}%
+    \rule{6em}{0.5pt}%
+  \end{center}%
+  \vfill%
+  \clearpage%
 }
 
 %%
