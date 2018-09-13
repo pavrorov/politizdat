@@ -122,7 +122,7 @@ approve:
 	$(MAKE) -C scripts approve
 
 .PHONY: clean autocorr restore approve checkbox remake diff clean-diff \
-		project-rename book booklet clean-book
+		project-rename book booklet clean-book cleanup-nesting
 
 DIFFRES = 600
 diff: | clean-diff
@@ -218,3 +218,10 @@ booklet: $(NAME)$(BOOKSUF).tex
 
 clean-book:
 	rm -fv $(NAME)$(BOOKSUF).tex $(NAME)$(BOOKSUF).pdf
+
+cleanup-nesting:
+	sed -i -e '/^[[:space:]]*\\\(begin\|end\){[[:space:]]*midsloppypar[[:space:]]*}[[:space:]]*$$/ d' \
+		   -e '/^[[:space:]]*\\enlargethispage{[^}]\+}[[:space:]]*$$/ d' \
+		   -e '/^[[:space:]]*\\setprechapter{[[:space:]]*\\v\(space\*\?{\|skip\)[^}]\+\(}[[:space:]]*\)\+$$/ d' \
+		   -e '/^[[:space:]]*\\\(markend\|goodbreak\)[[:space:]]*$$/ d' \
+		$(TEXFILES)
