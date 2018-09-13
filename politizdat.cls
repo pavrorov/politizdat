@@ -96,7 +96,8 @@
 
 %%
 %% * **`9pt`** ... **`12pt`**, **`14pt`** Набор опций для выбора
-%% размера базового шрифта. Доступен так же особый размер в `10.5pt`.
+%% размера базового шрифта. Доступны также особые размеры в `10.5pt`
+%% и `11.5pt`.
 \DeclareOption {9pt} {\PassOptionsToClass {9pt} {memoir}}
 \DeclareOption {10pt} {\PassOptionsToClass {10pt} {memoir}}
 
@@ -104,6 +105,12 @@
   {%
     \newcommand*{\anyptfilebase}{pltzdt}%
     \newcommand*{\anyptsize}{10.5}%
+    \PassOptionsToClass {*pt} {memoir}%
+  }
+\DeclareOption {11.5pt}
+  {%
+    \newcommand*{\anyptfilebase}{pltzdt}%
+    \newcommand*{\anyptsize}{11.5}%
     \PassOptionsToClass {*pt} {memoir}%
   }
 
@@ -1217,20 +1224,20 @@
     \def\afterchapternum{\par\nobreak\vspace{0.25em}}%
   \fi%
   \def\printchapternonum{}%
+  \def\chaptitlefont{\normalfont\Large\bfseries}%
+  \def\chaptitletocfont{\normalfont\large\bfseries}%
   \def\printchaptertitle##1{%
-    \centering\normalfont\Large%
-    \protect\bfseries%
+    \centering\chaptitlefont%
     \if@noupcasechaps%
-      \LARGE ##1
+      ##1
     \else%
       \protect\MakeTextUppercase{##1}%
     \fi%
   }%
   \def\printtoctitle##1{%
-    \centering\normalfont\Large%
-    \protect\bfseries%
+    \centering\chaptitletocfont%
     \if@noupcasechaps%
-      \LARGE%
+      ##1
     \fi%
     \protect\MakeTextUppercase{##1}%
   }
