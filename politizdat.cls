@@ -1304,6 +1304,8 @@
     \IfBooleanTF{#1}{\pltzdt@book*{#2}}{\pltzdt@book{#2}}%
   }
 
+\newlength{\cftafterpartskip}%
+\setlength{\cftafterpartskip}{0pt}%
 \newcommand{\tocpartbreak}[1]{%
   \addvspace{\cftbeforepartskip}%
   {%
@@ -1311,6 +1313,7 @@
     #1%
     \par\nobreak%
   }%
+  \addvspace{\cftafterpartskip}%
 }
 
 
