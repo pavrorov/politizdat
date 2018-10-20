@@ -163,15 +163,15 @@ clean-diff:
 W2L_CONF = w2l.conf.xml
 
 %.odt: %.doc
-	lowriter --headless --convert-to odt $<
+	lowriter --headless --convert-to odt '$<'
 
 %.odt: %.docx
-	lowriter --headless --convert-to odt $<
+	lowriter --headless --convert-to odt '$<'
 
 %.tex: %.odt $(W2L_CONF)
-	w2l -latex -config=$(W2L_CONF) $< $@
-	sed -i -f scripts/replace.sed $@
-	sed -i -f scripts/w2l.post.sed $@
+	w2l -latex -config=$(W2L_CONF) '$<' '$@'
+	sed -i -f scripts/replace.sed '$@'
+	sed -i -f scripts/w2l.post.sed '$@'
 
 replace: $(PARTTEXFILES)
 	for f in $(PARTTEXFILES); do \
