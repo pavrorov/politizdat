@@ -48,13 +48,16 @@ SIGNATURE = 16
 
 BIBFILES = $(addsuffix .bib,$(addprefix bib/,$(BIB)))
 
+MAKEFILEDIR = $(dir $(lastword $(MAKEFILE_LIST)))
+SCRIPTDIR = $(MAKEFILEDIR)scripts
+
 pdf: $(NAME).pdf
 
 clean: clean-book
 	rm -fv $(addprefix $(NAME),.aux .toc .out .log .run.xml \
 		   .bcf .bbl .blg .pdf)
 	for i in `seq 1 $(MAXRERUN)`; do rm -fv $(NAME).$$i.aux; done
-	$(MAKE) -C scripts clean
+	$(MAKE) -C $(SCRIPTDIR) clean
 
 $(NAME).aux $(if $(BIBFILES),$(NAME).bcf) $(NAME).toc: $(TEXFILES)
 	$(LATEX) $(NAME)
@@ -110,19 +113,21 @@ checkbox: $(NAME).log
 remake: clean pdf
 
 export PARTTEXFILES
-APPLYTOFILES = $(addprefix ../,$(PARTTEXFILES))
+APPLYTOFILES = $(abspath $(PARTTEXFILES))
 export APPLYTOFILES
 autocorr:
-	$(MAKE) -C scripts
+	$(MAKE) -C $(SCRIPTDIR)
 typecheck:
-	$(MAKE) -C scripts typecheck DIR=..
+	$(MAKE) -C $(SCRIPTDIR) typecheck DIR=..
 restore:
-	$(MAKE) -C scripts restore
+	$(MAKE) -C $(SCRIPTDIR) restore
 approve:
-	$(MAKE) -C scripts approve
+	$(MAKE) -C $(SCRIPTDIR) approve
 
 .PHONY: clean autocorr restore approve checkbox remake diff clean-diff \
 		project-rename book booklet clean-book cleanup-nesting
+
+.DELETE_ON_ERROR:
 
 DIFFRES = 600
 diff: | clean-diff
@@ -160,7 +165,7 @@ clean-diff:
 
 ## ---
 
-W2L_CONF = w2l.conf.xml
+W2L_CONF = $(MAKEFILEDIR)/w2l.conf.xml
 
 %.odt: %.doc
 	lowriter --headless --convert-to odt '$<'
@@ -170,18 +175,26 @@ W2L_CONF = w2l.conf.xml
 
 %.tex: %.odt $(W2L_CONF)
 	w2l -latex -config=$(W2L_CONF) '$<' '$@'
-	sed -i -f scripts/replace.sed '$@'
-	sed -i -f scripts/w2l.post.sed '$@'
+	sed -i -f $(SCRIPTDIR)/replace.sed '$@'
+	sed -i -f $(SCRIPTDIR)/w2l.post.sed '$@'
 
 replace: $(PARTTEXFILES)
 	for f in $(PARTTEXFILES); do \
-		sed -i -f scripts/replace.sed $$f; \
+		sed -i -f $(SCRIPTDIR)/replace.sed $$f; \
 	done
 
 ## ---
 
 %.tex: %.md
 	pandoc -S -f markdown -t latex -o $@ $<
+
+%.html: %.tex
+	$(SCRIPTDIR)/simplify.sed $< >.$<
+	pandoc -S $(EXPORTOPTS) -f latex -t html -o $@ .$<
+
+%.export.odt: %.tex
+	$(SCRIPTDIR)/simplify.sed $< >.$<
+	pandoc -S $(EXPORTOPTS) -f latex -t odt -o $@ .$<
 
 ## ---
 
